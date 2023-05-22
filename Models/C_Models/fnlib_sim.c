@@ -87,3 +87,37 @@ void ReLU(reg a, reg des){
         else {registers[des][i] = registers[a][i]; }
     }
 }
+
+void rotate(reg a){
+    float temp = 0.0;
+    for(int i=0; i<array_size; i++)
+    {
+        for(int j=i+1; j<array_size; j++)
+        {
+            temp = registers[a][i+(j*array_size)];
+            registers[a][i+(j*array_size)] = registers[a][j+(i*array_size)];
+            registers[a][j+(i*array_size)] = temp;
+        }
+    }
+}
+
+void printreg_v(reg a){
+    for(int i=0; i<array_size; i++)
+    {
+        printf("%f, ",registers[a][i]);
+    }
+    printf("\n");
+}
+
+void printreg_to_file(reg a, int row, int col, char *filename)
+{
+    FILE *out_file = fopen(filename, "w");
+    for(int i=0; i<row; i++)
+    {
+        for(int j=0; j<col; j++)
+        {
+            fprintf(out_file, "%.4f, ", registers[a][(i*array_size)+j]);
+        }
+        fprintf(out_file, "\n");
+    }
+}
