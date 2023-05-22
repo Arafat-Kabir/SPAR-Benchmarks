@@ -1,6 +1,8 @@
 #include "mlp1.h"
 #include "fnlib.h"
 #include <stdio.h> 
+#include <time.h>
+#include <stdlib.h>
 
 #define inputSize 784//784
 #define m1 100
@@ -14,16 +16,19 @@ static double w2[m2][m1];
 static double bias2[m2];
 
 void initialize(void *param) {
+    time_t t;
+    srand(3);
+
     // initialize parameters
     for(int i=0; i<inputSize; i++)
     {
-        input[i] = 1.0f;
+        input[i] = (double)rand()/(double)(RAND_MAX/10.0);
     }
     for(int i=0; i<m1; i++)
     {
         for(int j=0; j<inputSize; j++)
         {
-            w1[i][j] = (double)i;
+            w1[i][j] = (double)rand()/(double)(RAND_MAX/10.0);//(double)i;
             // printf("%.2f, ", w1[i][j]);
         }
         // printf("\n");
@@ -37,12 +42,12 @@ void initialize(void *param) {
     {
         for(int j=0; j<m1; j++)
         {
-            w2[i][j] = (double)i*(double)j;
+            w2[i][j] = (double)rand()/(double)(RAND_MAX/10.0);//(double)i*(double)j;
         }
     }
     for(int i=0; i<m2; i++)
     {
-        bias2[i]=50.0f;
+        bias2[i]=(double)rand()/(double)(RAND_MAX/10.0);//50.0f;
     }
 }
 
