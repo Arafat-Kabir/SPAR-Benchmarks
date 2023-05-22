@@ -1,12 +1,12 @@
 #include "fnlib.h"
 #include <stdio.h>
 
-#define array_size 100
+#define array_size 784
 
-static float registers[32][(array_size*array_size)];
+static double registers[32][(array_size*array_size)];
 
 void load_m(reg a, void * b, int rows, int cols) {
-    float *mat =  (float *)b;
+    double *mat =  (double *)b;
     
     for(int i=0; i<rows; i++)
     {
@@ -89,7 +89,7 @@ void ReLU(reg a, reg des){
 }
 
 void rotate(reg a){
-    float temp = 0.0;
+    double temp = 0.0;
     for(int i=0; i<array_size; i++)
     {
         for(int j=i+1; j<array_size; j++)
@@ -116,8 +116,8 @@ void printreg_to_file(reg a, int row, int col, char *filename)
     {
         for(int j=0; j<col; j++)
         {
-            fprintf(out_file, "%.4f, ", registers[a][(i*array_size)+j]);
+            fprintf(out_file, "%.4f,\n", registers[a][(i*array_size)+j]);
         }
-        fprintf(out_file, "\n");
+        
     }
 }

@@ -3,8 +3,8 @@
 
 
 typedef int reg;
-typedef float* mat;
-typedef float* vec;
+typedef double* mat;
+typedef double* vec;
 typedef int acttype;
 
 void load_m(reg a, void * b, int rows, int cols);
