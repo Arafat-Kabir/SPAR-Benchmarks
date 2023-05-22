@@ -121,3 +121,8 @@ void printreg_to_file(reg a, int row, int col, char *filename)
         
     }
 }
+
+void lstm_gate(reg x, reg Wi, reg Bi, reg h, reg Wh, reg Bh, int x_size, int h_size, int output_size, int act_func, reg temp, reg des){
+    
+    return;
+}

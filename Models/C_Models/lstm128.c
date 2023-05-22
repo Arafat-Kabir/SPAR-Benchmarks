@@ -65,3 +65,12 @@ double Bho2[W2_Rows];
 //----Fully Connected Layer----//
 double WFC[W2_Rows][WFC_Rows];
 double BFC[WFC_Rows];
+
+void initialize_lstm128(void *param){
+    return;
+}
+
+int run_inference_lstm128(){
+    
+    return 0;
+}

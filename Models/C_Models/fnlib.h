@@ -20,3 +20,5 @@ void ReLU(reg a, reg des);
 void activation(reg a, acttype act);
 void rotate(reg a);
 void store(reg a, vec b);
+
+void lstm_gate(reg x, reg Wi, reg Bi, reg h, reg Wh, reg Bh, int x_size, int h_size, int output_size, int act_func, reg temp, reg des);
