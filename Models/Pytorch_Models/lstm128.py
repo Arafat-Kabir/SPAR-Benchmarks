@@ -4,6 +4,7 @@ inputsize = 65
 hSize = 128
 layer1Size = 128
 layer2Size = 128
+outputsize = 65
 
 input = np.empty([65])
 c0 = np.empty([128])
@@ -57,6 +58,10 @@ Wio2 = np.empty([layer2Size, inputsize])
 Bio2 = np.empty([layer2Size])
 Who2 = np.empty([layer2Size, hSize])
 Bho2 = np.empty([layer2Size])
+
+#Fully Connected Layer
+W_FC = np.empty([outputsize, layer2Size])
+B_FC = np.empty([outputsize])
 
 
 def Sigmoid(x):
@@ -139,6 +144,11 @@ def Populate():
     Who2 = np.ones([layer2Size, hSize])
     Bho2 = np.ones([layer2Size])
 
+    #Fully Connected Layer
+    global W_FC, B_FC
+    W_FC = np.ones([outputsize, layer2Size])
+    B_FC = np.ones([outputsize])
+
 if __name__=="__main__":
     Populate()
     #lstmlayer 2
@@ -159,4 +169,11 @@ if __name__=="__main__":
     c2 = (f2*c1) + (i2*g2)
     h2 = o1*(np.tanh(c2))
     print(h2)
+
     #fully
+    WfcH = W_FC.dot(h2)
+    print(W_FC)
+    print(WfcH)
+    WfcH_b = WfcH + B_FC
+
+    print(WfcH_b)
