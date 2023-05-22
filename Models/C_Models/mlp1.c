@@ -46,13 +46,82 @@ void initialize(void *param) {
     }
 }
 
-void write_data_to_file(char *file) {
-    
+void write_data_to_file(char *filename) {
+    int count = 0;
+    FILE *out_file = fopen(filename, "w");
+    fprintf(out_file, "{\n");
+    //input
+    fprintf(out_file, "\"input_size\": %d,\n", inputSize);
+    fprintf(out_file, "\"input\": [");
+    for(int i=0; i<inputSize; i++)
+    {
+        if(i>0){fprintf(out_file, ", ");}
+        if(i%20 == 19){fprintf(out_file, "\n");}
+        fprintf(out_file, "%lf", input[i]);
+    }
+    fprintf(out_file, "],\n");
+
+    //weight1
+    fprintf(out_file, "\"weight1_col\": %d,\n", inputSize);
+    fprintf(out_file, "\"weight1_row\": %d,\n", m1);
+    fprintf(out_file, "\"weight1\": [");
+    for(int i=0; i<m1; i++)
+    {
+        for(int j=0; j<inputSize; j++)
+        {
+            
+            if(count%20 == 19){fprintf(out_file, "\n");}
+            fprintf(out_file, "%lf", w1[i][j]);
+            if((j<inputSize-1)||(i<m1-1)){fprintf(out_file, ", ");}
+            count++;
+        }
+    }
+    fprintf(out_file, "],\n");
+    //bias1
+    fprintf(out_file, "\"bias1_size\": %d,\n", inputSize);
+    fprintf(out_file, "\"bias1\": [");
+    for(int i=0; i<m1; i++)
+    {
+        if(i>0){fprintf(out_file, ", ");}
+        if(i%20 == 19){fprintf(out_file, "\n");}
+        fprintf(out_file, "%lf", bias1[i]);
+    }
+    fprintf(out_file, "],\n");
+
+    //weight2
+    count = 0;
+    fprintf(out_file, "\"weight2_col\": %d,\n", m1);
+    fprintf(out_file, "\"weight2_row\": %d,\n", m2);
+    fprintf(out_file, "\"weight2\": [");
+   for(int i=0; i<m2; i++)
+    {
+        for(int j=0; j<m1; j++)
+        {
+            
+            if(count%20 == 19){fprintf(out_file, "\n");}
+            fprintf(out_file, "%lf", w2[i][j]);
+            if((j<m1-1)||(i<m2-1)){fprintf(out_file, ", ");}
+            count++;
+        }
+    }
+    fprintf(out_file, "],\n");
+    //bias2
+    fprintf(out_file, "\"bias2_size\": %d,\n", inputSize);
+    fprintf(out_file, "\"bias2\": [");
+    for(int i=0; i<m2; i++)
+    {
+        if(i>0){fprintf(out_file, ", ");}
+        if(i%20 == 19){fprintf(out_file, "\n");}
+        fprintf(out_file, "%lf", bias2[i]);
+    }
+    fprintf(out_file, "]\n");
+
+    fprintf(out_file, "}");
 }
 
 int run_inference() { //change this
     initialize(NULL);
-
+    write_data_to_file("../WeightsAndBiases/mlp1.json");
     //first layer
     load_v(1, input, inputSize);
     load_m(2, w1, m1, inputSize);

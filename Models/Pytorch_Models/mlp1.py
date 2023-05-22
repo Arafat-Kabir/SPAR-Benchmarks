@@ -1,7 +1,7 @@
 import numpy as np
-
-def ReLU(x):
-    return x*(x>=0)
+import json
+import sys
+import os
 
 inputsize = 784
 m1 = 100
@@ -26,21 +26,51 @@ for i in range(m2):
 for i in range(m2):
     bias2[i] = 50.0
 
-#layer1
-print(weight1)
-print(input)
-wx1 = weight1.dot(input)
-print(wx1)
-wx1_b = wx1+bias1
-print(wx1_b)
-Relu_wx1_b = ReLU(wx1_b)
+def ReLU(x):
+    return x*(x>=0)
 
-#layer2
-wx2 = weight2.dot(Relu_wx1_b)
-wx2_b = wx2+bias2
-Relu_wx2_b = ReLU(wx2_b)
+def PopulateData(file_name):
+    with open(file_name) as json_file:
+        data = json.load(json_file)
+        print(data.keys())
+        global inputsize
+        inputsize = int(data['input_size'])
+        global m1
+        m1 = int(data['weight1_row'])
+        global m2
+        m2 = int(data['weight2_row'])
+        global input
+        global weight1
+        global bias1
+        global weight2
+        global bias2
+        input = np.array(data['input'])
+        weight1 = np.array(data['weight1']).reshape([m1, inputsize])
+        bias1 = np.array(data['bias1'])
+        weight2 = np.array(data['weight2']).reshape([m2, m1])
+        bias2 = np.array(data['bias2'])
 
-#output
-fout = open("../outputs/mlp1_python_output.txt", "w")
-for i in range(m2):
-    fout.write("{:.4f},\n".format(Relu_wx2_b[i]))
+
+if __name__=="__main__":
+    if(len(sys.argv)>=2):
+        if(os.path.exists(sys.argv[1])):
+            PopulateData(sys.argv[1])
+        else:
+            print("Cannot Find Specified File")
+        
+
+    #layer1
+    # print(weight1)
+    wx1 = weight1.dot(input)
+    wx1_b = wx1+bias1
+    Relu_wx1_b = ReLU(wx1_b)
+
+    #layer2
+    wx2 = weight2.dot(Relu_wx1_b)
+    wx2_b = wx2+bias2
+    Relu_wx2_b = ReLU(wx2_b)
+
+    #output
+    fout = open("../outputs/mlp1_python_output.txt", "w")
+    for i in range(m2):
+        fout.write("{:.4f},\n".format(Relu_wx2_b[i]))
