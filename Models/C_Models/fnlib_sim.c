@@ -80,6 +80,15 @@ void add(reg a, reg b, reg des){
     }
 }
 
+void e_mul(reg a, reg b, reg result){
+    for(int i=0; i<(array_size*array_size); i++)
+    {
+        registers[result][i]=registers[a][i] * registers[b][i];
+    }
+    return;
+}
+
+
 void ReLU(reg a, reg des){
     for(int i=0; i<array_size*array_size; i++)
     {
@@ -97,6 +106,25 @@ void rotate(reg a){
             temp = registers[a][i+(j*array_size)];
             registers[a][i+(j*array_size)] = registers[a][j+(i*array_size)];
             registers[a][j+(i*array_size)] = temp;
+        }
+    }
+}
+
+void rotate_mov(reg a, reg des){
+
+    double temp = 0.0;
+    for(int i=0; i<(array_size*array_size); i++)
+    {
+        registers[des][i]=registers[a][i];
+    }
+
+    for(int i=0; i<array_size; i++)
+    {
+        for(int j=i+1; j<array_size; j++)
+        {
+            temp = registers[des][i+(j*array_size)];
+            registers[des][i+(j*array_size)] = registers[des][j+(i*array_size)];
+            registers[des][j+(i*array_size)] = temp;
         }
     }
 }
@@ -122,7 +150,22 @@ void printreg_to_file(reg a, int row, int col, char *filename)
     }
 }
 
-void lstm_gate(reg x, reg Wi, reg Bi, reg h, reg Wh, reg Bh, int x_size, int h_size, int output_size, int act_func, reg temp, reg des){
-    
+void lstm_gate(reg x, reg Wi, reg Bi, reg h, reg Wh, reg Bh, int x_size, int h_size, int output_size, int act_func, reg temp1, reg temp2, reg temp3, reg des){
+    //Multiply accumulate add for x
+    e_mul_mv(Wi, x, output_size, x_size, temp1);
+    acc_col(temp1, output_size, x_size, temp2, des);
+    add(des, Bi, des); //Assume bias is automatically oriented
+    //multiply accumulate add for h
+    e_mul_mv(Wh, h, output_size, h_size, temp1);
+    acc_col(temp1, output_size, h_size, temp2, temp3);
+    add(temp3, Bh, temp3);
+    //Add the two
+    add(temp3, des, temp3);
+    //apply a non-ReLU activation function that also rotates the vector
+    activation(temp3, des, act_func);
+    return;
+}
+
+void activation(reg a, reg des, acttype act){
     return;
 }

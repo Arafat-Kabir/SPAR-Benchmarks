@@ -16,9 +16,11 @@ void printreg_to_file(reg a, int row, int col, char *filename);
 void e_mul_mv(reg m, reg v, int rowm, int colm, reg result);
 void acc_col(reg m, int rowm, int colm, reg temp, reg result);
 void add(reg a, reg b, reg des);
+void e_mul(reg a, reg b, reg result);
 void ReLU(reg a, reg des);
-void activation(reg a, acttype act);
+void activation(reg a, reg des, acttype act);
 void rotate(reg a);
+void rotate_mov(reg a, reg des);
 void store(reg a, vec b);
 
-void lstm_gate(reg x, reg Wi, reg Bi, reg h, reg Wh, reg Bh, int x_size, int h_size, int output_size, int act_func, reg temp, reg des);
+void lstm_gate(reg x, reg Wi, reg Bi, reg h, reg Wh, reg Bh, int x_size, int h_size, int output_size, int act_func, reg temp1, reg temp2, reg temp3, reg des);
