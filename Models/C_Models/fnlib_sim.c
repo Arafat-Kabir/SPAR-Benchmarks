@@ -1,7 +1,9 @@
 #include "fnlib.h"
 #include <stdio.h>
+#include <math.h>
 
 #define array_size 784
+#define EULER_NUMBER 2.71828
 
 static double registers[32][(array_size*array_size)];
 
@@ -111,20 +113,11 @@ void rotate(reg a){
 }
 
 void rotate_mov(reg a, reg des){
-
-    double temp = 0.0;
-    for(int i=0; i<(array_size*array_size); i++)
-    {
-        registers[des][i]=registers[a][i];
-    }
-
     for(int i=0; i<array_size; i++)
     {
-        for(int j=i+1; j<array_size; j++)
+        for(int j=0; j<array_size; j++)
         {
-            temp = registers[des][i+(j*array_size)];
-            registers[des][i+(j*array_size)] = registers[des][j+(i*array_size)];
-            registers[des][j+(i*array_size)] = temp;
+            registers[des][i+(j*array_size)] = registers[a][j+(i*array_size)];
         }
     }
 }
@@ -132,7 +125,7 @@ void rotate_mov(reg a, reg des){
 void printreg_v(reg a){
     for(int i=0; i<array_size; i++)
     {
-        printf("%f, ",registers[a][i]);
+        printf("%f,\n",registers[a][i]);
     }
     printf("\n");
 }
@@ -167,5 +160,30 @@ void lstm_gate(reg x, reg Wi, reg Bi, reg h, reg Wh, reg Bh, int x_size, int h_s
 }
 
 void activation(reg a, reg des, acttype act){
+    if(act == 1) //sigmoid
+    {
+        for(int i=0; i<array_size; i++) //go along the first column; write to first row
+        {
+            registers[des][i] = (1.0/(1.0 + pow(EULER_NUMBER, -1.0 * registers[a][i*array_size])));
+        }
+    }
+    if(act == 2) //sigmoid
+    {
+        for(int i=0; i<array_size; i++) //go along the first column; write to first row
+        {
+            registers[des][i] = tanh(registers[a][i*array_size]);
+        }
+    }
     return;
+}
+
+void printreg_segment(reg a, int row, int col){
+    for(int i=0; i<row; i++)
+    {
+        for(int j=0; j<col; j++)
+        {
+            printf("%.4f, ", registers[a][(i*array_size)+j]);
+        }
+        printf("\n");
+    }
 }

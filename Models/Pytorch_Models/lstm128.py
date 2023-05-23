@@ -151,7 +151,7 @@ def Populate():
 
 if __name__=="__main__":
     Populate()
-    #lstmlayer 2
+    #lstmlayer 1
     i1 = Gate(x=input, Wi=Wii1, Bi=Bii1, h=h0, Wh=Whi1, Bh=Bhi1, act_func='sigmoid')
     f1 = Gate(x=input, Wi=Wif1, Bi=Bif1, h=h0, Wh=Whf1, Bh=Bhf1, act_func='sigmoid')
     g1 = Gate(x=input, Wi=Wig1, Bi=Big1, h=h0, Wh=Whg1, Bh=Bhg1, act_func='tanh')
@@ -159,21 +159,23 @@ if __name__=="__main__":
     c1 = (f1*c0) + (i1*g1)
     h1 = o1*(np.tanh(c1))
     x1  = Dropout1.dot(h1)
-    
-
-    #lstmlayer 1
+ 
+    #lstmlayer 2
     i2 = Gate(x=x1, Wi=Wii2, Bi=Bii2, h=h1, Wh=Whi2, Bh=Bhi2, act_func='sigmoid')
     f2 = Gate(x=x1, Wi=Wif2, Bi=Bif2, h=h1, Wh=Whf2, Bh=Bhf2, act_func='sigmoid')
     g2 = Gate(x=x1, Wi=Wig2, Bi=Big2, h=h1, Wh=Whg2, Bh=Bhg2, act_func='tanh')
     o2 = Gate(x=x1, Wi=Wio2, Bi=Bio2, h=h1, Wh=Who2, Bh=Bho2, act_func='sigmoid')
     c2 = (f2*c1) + (i2*g2)
     h2 = o1*(np.tanh(c2))
-    print(h2)
-
+    # print(i2)
+    # print(f2)
+    # print(g2)
+    # print(o2)
+    # print(c2)
+    # print(h2)
     #fully
     WfcH = W_FC.dot(h2)
-    print(W_FC)
     print(WfcH)
     WfcH_b = WfcH + B_FC
-
     print(WfcH_b)
+

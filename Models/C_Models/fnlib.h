@@ -12,6 +12,7 @@ void load_v(reg a, vec b, int size);
 void load_v_t(reg a, vec b, int size);
 void printreg(reg a);
 void printreg_v(reg a);
+void printreg_segment(reg a, int row, int col);
 void printreg_to_file(reg a, int row, int col, char *filename);
 void e_mul_mv(reg m, reg v, int rowm, int colm, reg result);
 void acc_col(reg m, int rowm, int colm, reg temp, reg result);
