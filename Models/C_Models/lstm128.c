@@ -267,3 +267,8 @@ int run_inference_lstm128(){
     return 0;
 }
 
+//todo: 
+//* randomly generate values and output them to json
+//* add a way to load those values to the python model
+//* make a run file and compare the outputs
+
