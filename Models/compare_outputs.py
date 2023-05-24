@@ -34,8 +34,8 @@ for i in range(length):
         values3.append("Error")
         errors+=1
 # percent_dif_sum = percent_dif_sum/100.0
-print("diff^2: {:.4f}, errors: {:d}".format(difference_squared, errors))
-output.write("diff^2: {:f}, errors: {:d}".format(difference_squared, errors))
+print("diff^2: {:.4f}, errors: {:d}\n".format(difference_squared, errors))
+output.write("diff^2: {:f}, errors: {:d}\n".format(difference_squared, errors))
 for i in range(length):
     output.write(str(values3[i]))
     output.write('\n')

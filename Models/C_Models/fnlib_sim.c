@@ -1,5 +1,6 @@
 #include "fnlib.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 
 #define array_size 784
@@ -186,4 +187,22 @@ void printreg_segment(reg a, int row, int col){
         }
         printf("\n");
     }
+}
+
+void write_array_to_file(FILE *outfile, void *array, long size, char *name, int end){
+    double *arr = (double *) array;
+    // FILE *outfile = fopen(filename, "a+");
+    if(outfile==NULL) return;
+    else{
+        fprintf(outfile, "\"%s\": [",name);
+        for(int i=0; i<size; i++)
+        {
+            fprintf(outfile, "%lf", arr[i]);
+            if(i<size-1){fprintf(outfile, ", ");}
+            if(i%20==19){fprintf(outfile, "\n");}
+        }
+        if(end==0){fprintf(outfile, "],\n");}
+        else {fprintf(outfile, "]\n");}
+    }
+    // fclose(outfile);
 }

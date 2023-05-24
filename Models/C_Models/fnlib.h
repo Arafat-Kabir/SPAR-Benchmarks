@@ -1,6 +1,7 @@
 // header guard
 
-
+#include <stdio.h>
+#include <stdlib.h>
 
 typedef int reg;
 typedef double* mat;
@@ -25,3 +26,6 @@ void rotate_mov(reg a, reg des);
 void store(reg a, vec b);
 
 void lstm_gate(reg x, reg Wi, reg Bi, reg h, reg Wh, reg Bh, int x_size, int h_size, int output_size, int act_func, reg temp1, reg temp2, reg temp3, reg des);
+
+//just for testing
+void write_array_to_file(FILE *outfile, void *array, long size, char *name, int end);

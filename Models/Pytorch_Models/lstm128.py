@@ -1,15 +1,18 @@
 import numpy as np
-
+import json
+import sys
+import os
 inputsize = 65
 hSize = 128
+cSize = 128
 layer1Size = 128
 layer2Size = 128
 outputsize = 65
 
-input = np.empty([65])
-c0 = np.empty([128])
-h0 = np.empty([128])
-output = np.empty([65])
+input = np.empty([inputsize])
+c0 = np.empty([cSize])
+h0 = np.empty([hSize])
+output = np.empty([outputsize])
 #layer 1 weights
 #for i1
 Wii1 = np.empty([layer1Size, inputsize])
@@ -149,8 +152,76 @@ def Populate():
     W_FC = np.ones([outputsize, layer2Size])
     B_FC = np.ones([outputsize])
 
+def LoadWeights(file_name):
+    with open(file_name) as json_file:
+        data = json.load(json_file)
+        global inputsize, hSize, cSize, layer1Size, layer2Size, outputsize
+        inputsize = data['X_Size']
+        hSize = data['H_Size']
+        cSize = data['C_Size']
+        layer1Size = data['W1_Rows']
+        layer2Size = data['W2_Rows']
+        outputsize = data['Output_Size']
+        global input, h0, c0
+        input = np.array(data['Input'])
+        h0 = np.array(data['H0'])
+        c0 = np.array(data['C0'])
+        global Wii1, Bii1, Whi1, Bhi1
+        Wii1 = np.array(data['Wii1']).reshape([layer1Size, inputsize])
+        Bii1 = np.array(data['Bii1'])
+        Whi1 = np.array(data['Whi1']).reshape([layer1Size, hSize])
+        Bhi1 = np.array(data['Bhi1'])
+        global Wif1, Bif1, Whf1, Bhf1
+        Wif1 = np.array(data['Wif1']).reshape([layer1Size, inputsize])
+        Bif1 = np.array(data['Bif1'])
+        Whf1 = np.array(data['Whf1']).reshape([layer1Size, hSize])
+        Bhf1 = np.array(data['Bhf1'])
+        global Wig1, Big1, Whg1, Bhg1
+        Wig1 = np.array(data['Wig1']).reshape([layer1Size, inputsize])
+        Big1 = np.array(data['Big1'])
+        Whg1 = np.array(data['Whg1']).reshape([layer1Size,hSize])
+        Bhg1 = np.array(data['Bhg1'])
+        global Wio1, Bio1, Who1, Bho1
+        Wio1 = np.array(data['Wio1']).reshape([layer1Size,inputsize])
+        Bio1 = np.array(data['Bio1'])
+        Who1 = np.array(data['Who1']).reshape([layer1Size, hSize])
+        Bho1 = np.array(data['Bho1'])
+        global Dropout1
+        Dropout1 = np.array(data['Dropout1']).reshape([inputsize, layer1Size])
+
+        global Wii2, Bii2, Whi2, Bhi2
+        Wii2 = np.array(data['Wii2']).reshape([layer2Size, inputsize])
+        Bii2 = np.array(data['Bii2'])
+        Whi2 = np.array(data['Whi2']).reshape([layer2Size, hSize])
+        Bhi2 = np.array(data['Bhi2'])
+        global Wif2, Bif2, Whf2, Bhf2
+        Wif2 = np.array(data['Wif2']).reshape([layer2Size, inputsize])
+        Bif2 = np.array(data['Bif2'])
+        Whf2 = np.array(data['Whf2']).reshape([layer2Size, hSize])
+        Bhf2 = np.array(data['Bhf2'])
+        global Wig2, Big2, Whg2, Bhg2
+        Wig2 = np.array(data['Wig2']).reshape([layer2Size, inputsize])
+        Big2 = np.array(data['Big2'])
+        Whg2 = np.array(data['Whg2']).reshape([layer2Size, hSize])
+        Bhg2 = np.array(data['Bhg2'])
+        global Wio2, Bio2, Who2, Bho2
+        Wio2 = np.array(data['Wio2']).reshape([layer2Size, inputsize])
+        Bio2 = np.array(data['Bio2'])
+        Who2 = np.array(data['Who2']).reshape([layer2Size, hSize])
+        Bho2 = np.array(data['Bho2'])
+        global W_FC, B_FC
+        W_FC = np.array(data['WFC']).reshape([outputsize, layer2Size])
+        B_FC = np.array(data['BFC'])
+        return
+
 if __name__=="__main__":
     Populate()
+    if(len(sys.argv)>=2):
+        if(os.path.exists(sys.argv[1])):
+            print("found file"+ sys.argv[1])
+            LoadWeights(sys.argv[1])
+        else:
+            print("Cannot Find Specified File")
     #lstmlayer 1
     i1 = Gate(x=input, Wi=Wii1, Bi=Bii1, h=h0, Wh=Whi1, Bh=Bhi1, act_func='sigmoid')
     f1 = Gate(x=input, Wi=Wif1, Bi=Bif1, h=h0, Wh=Whf1, Bh=Bhf1, act_func='sigmoid')
@@ -159,7 +230,14 @@ if __name__=="__main__":
     c1 = (f1*c0) + (i1*g1)
     h1 = o1*(np.tanh(c1))
     x1  = Dropout1.dot(h1)
- 
+    # print(Bii1)
+    # print(i1)
+    # print(f1)
+    # print(g1)
+    # print(o1)
+    # print(x1)
+    # print(f1*c0)
+    # print(c1)
     #lstmlayer 2
     i2 = Gate(x=x1, Wi=Wii2, Bi=Bii2, h=h1, Wh=Whi2, Bh=Bhi2, act_func='sigmoid')
     f2 = Gate(x=x1, Wi=Wif2, Bi=Bif2, h=h1, Wh=Whf2, Bh=Bhf2, act_func='sigmoid')
@@ -175,7 +253,10 @@ if __name__=="__main__":
     # print(h2)
     #fully
     WfcH = W_FC.dot(h2)
-    print(WfcH)
+    # print(WfcH)
     WfcH_b = WfcH + B_FC
-    print(WfcH_b)
+    print(B_FC)
+    fout = open("../outputs/lstm128_python_output.txt", "w")
+    for i in range(outputsize):
+        fout.write("{:.4f},\n".format(WfcH_b[i]))
 
