@@ -402,11 +402,11 @@ int run_inference_lstm128(){
     load_m(1, WFC, WFC_Rows, W2_Rows);
     // printreg_segment(1, 65, 128);
     load_v_t(2, BFC, WFC_Rows); //todo: bias not matching json
-    e_mul_mv(1, 16, WFC_Rows, W2_Rows, 2);
-    acc_col(2, WFC_Rows, W2_Rows, 0, 3);
-    printreg_segment(2, 1, 65);
+    e_mul_mv(1, 16, WFC_Rows, W2_Rows, 3);
+    acc_col(3, WFC_Rows, W2_Rows, 0, 4);
+    // printreg_segment(4, 1, 65);
 
-    add(3, 2, 5);
+    add(4, 2, 5);
     rotate(5);
     // printreg_segment(5, 1, 65);
     printreg_to_file(5, 1, 65, "../outputs/lstm128_c_output.txt");
