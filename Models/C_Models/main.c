@@ -4,7 +4,7 @@
 int main() {
     // void *p = 0;
     // initialize(p);
-    // run_inference();
+    run_inference();
     // something else: softmax
     run_inference_lstm128();
     return 0;

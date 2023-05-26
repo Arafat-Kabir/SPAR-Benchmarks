@@ -67,7 +67,7 @@ double WFC[WFC_Rows][W2_Rows];
 double BFC[WFC_Rows];
 
 void initialize_lstm128(void *param){
-    srand(20);
+    srand(24537890);
     double highestFloat = 10.0f;
     for(int i=0; i<x_size; i++){
         X0[i] = (double)rand()/(double)(RAND_MAX/highestFloat);
