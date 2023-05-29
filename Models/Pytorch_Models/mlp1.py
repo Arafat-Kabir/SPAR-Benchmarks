@@ -18,21 +18,21 @@ bias3 = np.empty(output)
 
 for i in range(m1):
     for j in range(inputsize):
-        weight1[i,j] = 1.0*i
+        weight1[i,j] = 1.0
 for i in range(inputsize):
     input[i] = 1.0
 for i in range(m1):
     bias1[i]= -10.0
 for i in range(m2):
     for j in range(m1):
-        weight2[i,j] = i*j
+        weight2[i,j] = 1.0
 for i in range(m2):
-    bias2[i] = 50.0
+    bias2[i] = 1.0
 for i in range(output):
     for j in range(m2):
-        weight3[i,j] = i*j
+        weight3[i,j] = 1.0
 for i in range(output):
-    bias3[i] = 50.0
+    bias3[i] = 1.0
 
 def ReLU(x):
     return x*(x>=0)
@@ -92,6 +92,7 @@ if __name__=="__main__":
     wx1 = weight1.dot(input)
     wx1_b = wx1+bias1
     Relu_wx1_b = ReLU(wx1_b)
+    print(Relu_wx1_b)
 
     #layer2
     wx2 = weight2.dot(Relu_wx1_b)

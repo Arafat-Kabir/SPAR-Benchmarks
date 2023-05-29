@@ -140,6 +140,8 @@ void printreg_to_file(reg a, int row, int col, char *filename)
     {
         for(int j=0; j<col; j++)
         {
+            int full = registers[a][(i*array_size)+j]>>16;
+            int part = (((registers[a][(i*array_size)+j]<<16)>>16)*100000)/(1<<16);
             fprintf(out_file, "%d,\n", registers[a][(i*array_size)+j]);
         }
         
@@ -185,7 +187,7 @@ void printreg_segment(reg a, int row, int col){
     {
         for(int j=0; j<col; j++)
         {
-            printf("%.4f, ", registers[a][(i*array_size)+j]);
+            printf("%d, ", registers[a][(i*array_size)+j]);
         }
         printf("\n");
     }
