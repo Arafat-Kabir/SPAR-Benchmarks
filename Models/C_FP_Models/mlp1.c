@@ -3,6 +3,7 @@
 #include <stdio.h> 
 #include <time.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #define inputSize 784//784
 #define m1 100
@@ -10,15 +11,15 @@
 #define output 10 //output
 
 
-static double input[inputSize];
-static double w1[m1][inputSize];//[rows][cols]
-static double bias1[m1];
+static fixp input[inputSize];
+static fixp w1[m1][inputSize];//[rows][cols]
+static fixp bias1[m1];
 
-static double w2[m2][m1];
-static double bias2[m2];
+static fixp w2[m2][m1];
+static fixp bias2[m2];
 
-static double w3[output][m2];
-static double bias3[output];
+static fixp w3[output][m2];
+static fixp bias3[output];
 
 void initialize(void *param) {
     time_t t;
@@ -27,13 +28,13 @@ void initialize(void *param) {
     // initialize parameters
     for(int i=0; i<inputSize; i++)
     {
-        input[i] = (double)rand()/(double)(RAND_MAX/10.0);
+        input[i] = (fixp)rand()/(fixp)(RAND_MAX/10.0);
     }
     for(int i=0; i<m1; i++)
     {
         for(int j=0; j<inputSize; j++)
         {
-            w1[i][j] = (double)rand()/(double)(RAND_MAX/10.0);//(double)i;
+            w1[i][j] = (fixp)rand()/(fixp)(RAND_MAX/10.0);//(fixp)i;
             // printf("%.2f, ", w1[i][j]);
         }
         // printf("\n");
@@ -47,20 +48,20 @@ void initialize(void *param) {
     {
         for(int j=0; j<m1; j++)
         {
-            w2[i][j] = (double)rand()/(double)(RAND_MAX/10.0);//(double)i*(double)j;
+            w2[i][j] = (fixp)rand()/(fixp)(RAND_MAX/10.0);//(fixp)i*(fixp)j;
         }
     }
     for(int i=0; i<m2; i++)
     {
-        bias2[i]=(double)rand()/(double)(RAND_MAX/10.0);//50.0f;
+        bias2[i]=(fixp)rand()/(fixp)(RAND_MAX/10.0);//50.0f;
     }
 
     for(int i=0; i<output; i++)
     {
-        bias3[i] = (double)rand()/(double)(RAND_MAX/10.0);
+        bias3[i] = (fixp)rand()/(fixp)(RAND_MAX/10.0);
         for(int j=0; j<m2; j++)
         {
-            w3[i][j] = (double)rand()/(double)(RAND_MAX/10.0);//(double)i*(double)j;
+            w3[i][j] = (fixp)rand()/(fixp)(RAND_MAX/10.0);//(fixp)i*(fixp)j;
         }
     }
 }
@@ -76,7 +77,7 @@ void write_data_to_file(char *filename) {
     {
         if(i>0){fprintf(out_file, ", ");}
         if(i%20 == 19){fprintf(out_file, "\n");}
-        fprintf(out_file, "%lf", input[i]);
+        fprintf(out_file, "%d", input[i]);
     }
     fprintf(out_file, "],\n");
 
@@ -90,7 +91,7 @@ void write_data_to_file(char *filename) {
         {
             
             if(count%20 == 19){fprintf(out_file, "\n");}
-            fprintf(out_file, "%lf", w1[i][j]);
+            fprintf(out_file, "%d", w1[i][j]);
             if((j<inputSize-1)||(i<m1-1)){fprintf(out_file, ", ");}
             count++;
         }
@@ -103,7 +104,7 @@ void write_data_to_file(char *filename) {
     {
         if(i>0){fprintf(out_file, ", ");}
         if(i%20 == 19){fprintf(out_file, "\n");}
-        fprintf(out_file, "%lf", bias1[i]);
+        fprintf(out_file, "%d", bias1[i]);
     }
     fprintf(out_file, "],\n");
 
@@ -118,7 +119,7 @@ void write_data_to_file(char *filename) {
         {
             
             if(count%20 == 19){fprintf(out_file, "\n");}
-            fprintf(out_file, "%lf", w2[i][j]);
+            fprintf(out_file, "%d", w2[i][j]);
             if((j<m1-1)||(i<m2-1)){fprintf(out_file, ", ");}
             count++;
         }
@@ -131,7 +132,7 @@ void write_data_to_file(char *filename) {
     {
         if(i>0){fprintf(out_file, ", ");}
         if(i%20 == 19){fprintf(out_file, "\n");}
-        fprintf(out_file, "%lf", bias2[i]);
+        fprintf(out_file, "%d", bias2[i]);
     }
     fprintf(out_file, "],\n");
 
@@ -146,7 +147,7 @@ void write_data_to_file(char *filename) {
         {
             
             if(count%20 == 19){fprintf(out_file, "\n");}
-            fprintf(out_file, "%lf", w3[i][j]);
+            fprintf(out_file, "%d", w3[i][j]);
             if((j<m2-1)||(i<output-1)){fprintf(out_file, ", ");}
             count++;
         }
@@ -159,7 +160,7 @@ void write_data_to_file(char *filename) {
     {
         if(i>0){fprintf(out_file, ", ");}
         if(i%20 == 19){fprintf(out_file, "\n");}
-        fprintf(out_file, "%lf", bias3[i]);
+        fprintf(out_file, "%d", bias3[i]);
     }
     fprintf(out_file, "]\n");
 

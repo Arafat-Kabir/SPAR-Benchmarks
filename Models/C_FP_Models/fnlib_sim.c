@@ -1,4 +1,5 @@
 #include "fnlib.h"
+#include "fplib.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -6,10 +7,10 @@
 #define array_size 784
 #define EULER_NUMBER 2.71828
 
-static double registers[32][(array_size*array_size)];
+static fixp registers[32][(array_size*array_size)];
 
 void load_m(reg a, void * b, int rows, int cols) {
-    double *mat =  (double *)b;
+    fixp *mat =  (fixp *)b;
     
     for(int i=0; i<rows; i++)
     {
@@ -56,7 +57,8 @@ void e_mul_mv(reg m, reg v, int rowm, int colm, reg result){
     {
         for(int j=0; j<rowm; j++)
         {
-            registers[result][i+(j*array_size)]=registers[m][i+(j*array_size)]*registers[v][i];
+            registers[result][i+(j*array_size)]=
+            fp_mul(registers[m][i+(j*array_size)],registers[v][i]);
             // printf("%.4f, %.4f, %.4f \n", registers[v][j], registers[m][i+(j*array_size)], registers[result][i+(j*array_size)]);
         }
     }
@@ -86,7 +88,7 @@ void add(reg a, reg b, reg des){
 void e_mul(reg a, reg b, reg result){
     for(int i=0; i<(array_size*array_size); i++)
     {
-        registers[result][i]=registers[a][i] * registers[b][i];
+        registers[result][i]=fp_mul(registers[a][i], registers[b][i]);//(registers[a][i] * registers[b][i];
     }
     return;
 }
@@ -101,7 +103,7 @@ void ReLU(reg a, reg des){
 }
 
 void rotate(reg a){
-    double temp = 0.0;
+    fixp temp = 0.0;
     for(int i=0; i<array_size; i++)
     {
         for(int j=i+1; j<array_size; j++)
@@ -138,7 +140,7 @@ void printreg_to_file(reg a, int row, int col, char *filename)
     {
         for(int j=0; j<col; j++)
         {
-            fprintf(out_file, "%.4f,\n", registers[a][(i*array_size)+j]);
+            fprintf(out_file, "%.4f,\n", (double)registers[a][(i*array_size)+j]);
         }
         
     }
@@ -190,7 +192,7 @@ void printreg_segment(reg a, int row, int col){
 }
 
 void write_array_to_file(FILE *outfile, void *array, long size, char *name, int end){
-    double *arr = (double *) array;
+    fixp *arr = (fixp *) array;
     // FILE *outfile = fopen(filename, "a+");
     if(outfile==NULL) return;
     else{

@@ -2,9 +2,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "fplib.h"
 typedef int reg;
-typedef double* mat;
-typedef double* vec;
+typedef fixp* mat;
+typedef fixp* vec;
 typedef int acttype;
 
 void load_m(reg a, void * b, int rows, int cols);
