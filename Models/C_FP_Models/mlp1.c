@@ -28,7 +28,7 @@ void initialize(void *param) {
     // initialize parameters
     for(int i=0; i<inputSize; i++)
     {
-        input[i] = (fixp)rand()/(fixp)(RAND_MAX/10.0);
+        input[i] = 1<<15;//(fixp)rand()/(fixp)(RAND_MAX/10.0);
     }
     for(int i=0; i<m1; i++)
     {
@@ -180,22 +180,22 @@ int run_inference() { //change this
     ReLU(1, 1);
     rotate(1);//rotate to correct the vector. May not be neccessary later
 
-    //second layer
-    load_m(2, w2, m2, m1);
-    e_mul_mv(2, 1, m2, m1, 3);
-    acc_col(3, m2, m1, 0, 4);
-    load_v_t(3, bias2, m2);
-    add(3, 4, 1);
-    ReLU(1, 1);
-    rotate(1);
+    // //second layer
+    // load_m(2, w2, m2, m1);
+    // e_mul_mv(2, 1, m2, m1, 3);
+    // acc_col(3, m2, m1, 0, 4);
+    // load_v_t(3, bias2, m2);
+    // add(3, 4, 1);
+    // ReLU(1, 1);
+    // rotate(1);
 
-    //output
-    load_m(2, w3, output, m2);
-    e_mul_mv(2, 1, output, m2, 3);
-    acc_col(3, output, m2, 0, 4);
-    load_v_t(3, bias2, m2);
-    add(3, 4, 1);
-    rotate(1); //rotate for now. The softmax will have to be implemented in software later.
+    // //output
+    // load_m(2, w3, output, m2);
+    // e_mul_mv(2, 1, output, m2, 3);
+    // acc_col(3, output, m2, 0, 4);
+    // load_v_t(3, bias2, m2);
+    // add(3, 4, 1);
+    // rotate(1); //rotate for now. The softmax will have to be implemented in software later.
 
     printreg_to_file(1, 1, output, "../outputs/mlp_c_output.txt");
     //store here

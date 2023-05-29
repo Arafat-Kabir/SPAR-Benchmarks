@@ -140,7 +140,7 @@ void printreg_to_file(reg a, int row, int col, char *filename)
     {
         for(int j=0; j<col; j++)
         {
-            fprintf(out_file, "%.4f,\n", (double)registers[a][(i*array_size)+j]);
+            fprintf(out_file, "%d,\n", registers[a][(i*array_size)+j]);
         }
         
     }
