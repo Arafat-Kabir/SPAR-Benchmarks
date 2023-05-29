@@ -28,40 +28,40 @@ void initialize(void *param) {
     // initialize parameters
     for(int i=0; i<inputSize; i++)
     {
-        input[i] = 1<<15;//(fixp)rand()/(fixp)(RAND_MAX/10.0);
+        input[i] = 1<<16;//(fixp)rand()/(fixp)(RAND_MAX/10.0);
     }
     for(int i=0; i<m1; i++)
     {
         for(int j=0; j<inputSize; j++)
         {
-            w1[i][j] = 1<<15;//(fixp)rand()/(fixp)(RAND_MAX/10.0);//(fixp)i;
+            w1[i][j] = (1<<16);//+(1<<14);//(fixp)rand()/(fixp)(RAND_MAX/10.0);//(fixp)i;
             // printf("%.2f, ", w1[i][j]);
         }
         // printf("\n");
     }
     for(int i=0; i<m1; i++)
     {
-        bias1[i]=1<<15;//;
+        bias1[i]=(1<<16) + (1<<14);//;
     }
 
     for(int i=0; i<m2; i++)
     {
         for(int j=0; j<m1; j++)
         {
-            w2[i][j] = 1<<15;//(fixp)rand()/(fixp)(RAND_MAX/10.0);//(fixp)i*(fixp)j;
+            w2[i][j] = 1<<16;//(fixp)rand()/(fixp)(RAND_MAX/10.0);//(fixp)i*(fixp)j;
         }
     }
     for(int i=0; i<m2; i++)
     {
-        bias2[i]=1<<15;//(fixp)rand()/(fixp)(RAND_MAX/10.0);//50.0f;
+        bias2[i]=1<<16;//(fixp)rand()/(fixp)(RAND_MAX/10.0);//50.0f;
     }
 
     for(int i=0; i<output; i++)
     {
-        bias3[i] = 1<<15;//(fixp)rand()/(fixp)(RAND_MAX/10.0);
+        bias3[i] = 1<<16;//(fixp)rand()/(fixp)(RAND_MAX/10.0);
         for(int j=0; j<m2; j++)
         {
-            w3[i][j] = 1<<15;//(fixp)rand()/(fixp)(RAND_MAX/10.0);//(fixp)i*(fixp)j;
+            w3[i][j] = 1<<16;//(fixp)rand()/(fixp)(RAND_MAX/10.0);//(fixp)i*(fixp)j;
         }
     }
 }
@@ -175,11 +175,14 @@ int run_inference() { //change this
     load_m(2, w1, m1, inputSize);
     e_mul_mv(2, 1, m1, inputSize, 3);
     acc_col(3, m1, inputSize, 0, 4); //accumulated vector in reg4
+    printreg_segment(4, 10, 10);
     load_v_t(3, bias1, m1); //load bias in turned orientation to// change to another orientation for loading
-    add(3, 4, 1); //add bias to vector
     printreg_segment(3, 10, 10);
+    add(3, 4, 1); //add bias to vector
+    
     ReLU(1, 1);
     rotate(1);//rotate to correct the vector. May not be neccessary later
+    printreg_segment(1, 10, 10);
 
     // //second layer
     // load_m(2, w2, m2, m1);

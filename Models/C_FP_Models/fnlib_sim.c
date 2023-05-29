@@ -187,7 +187,10 @@ void printreg_segment(reg a, int row, int col){
     {
         for(int j=0; j<col; j++)
         {
-            printf("%d, ", registers[a][(i*array_size)+j]);
+            int32_t number = registers[a][(i*array_size)+j];
+            int32_t fraction = (100000*(number&(0xFFFF)))/(1<<16);
+            if(fraction < 0) {fraction *= -1;}
+            printf("%d.%d, ", number>>16, fraction);
         }
         printf("\n");
     }
