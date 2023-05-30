@@ -88,7 +88,10 @@ fixp fp_mul(fixp a, fixp b){
     return c;
 }
 
-void float_to_fixed(double *a, int size, fixp *result){
+void float_to_fixed(void *input_double, int size, void *result_fp)
+{
+    fixp *result = (fixp *) result_fp;
+    double *a = (double *) input_double;
     for(int i=0; i<size; i++){
         result[i] = (fixp)(a[i]*((double)(1<<15)));
     }

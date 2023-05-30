@@ -140,11 +140,11 @@ void printreg_to_file(reg a, int row, int col, char *filename)
     {
         for(int j=0; j<col; j++)
         {
-            int full = registers[a][(i*array_size)+j]>>16;
-            int part = (((registers[a][(i*array_size)+j]<<16)>>16)*100000)/(1<<16);
-            fprintf(out_file, "%d,\n", registers[a][(i*array_size)+j]);
+            int32_t number = registers[a][(i*array_size)+j];
+            int32_t fraction = (100000*(number&(0xFFFF)))/(1<<16);
+            if(fraction < 0) {fraction *= -1;}
+            fprintf(out_file, "%d.%d, ", number>>16, fraction);
         }
-        
     }
 }
 
@@ -196,9 +196,8 @@ void printreg_segment(reg a, int row, int col){
     }
 }
 
-void write_array_to_file(FILE *outfile, void *array, long size, char *name, int end){
-    fixp *arr = (fixp *) array;
-    // FILE *outfile = fopen(filename, "a+");
+void write_array_to_file(FILE *outfile, void *array, long size, char *name, int end){ //append an array to the end of a file
+    double *arr = (double *) array;
     if(outfile==NULL) return;
     else{
         fprintf(outfile, "\"%s\": [",name);
@@ -211,5 +210,4 @@ void write_array_to_file(FILE *outfile, void *array, long size, char *name, int 
         if(end==0){fprintf(outfile, "],\n");}
         else {fprintf(outfile, "]\n");}
     }
-    // fclose(outfile);
 }

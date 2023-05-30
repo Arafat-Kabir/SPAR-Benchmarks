@@ -5,9 +5,9 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#define inputSize 10//784
-#define m1 10
-#define m2 10
+#define inputSize 784//784
+#define m1 100
+#define m2 100
 #define output 10 //output
 
 
@@ -21,49 +21,67 @@ static fixp bias2[m2];
 static fixp w3[output][m2];
 static fixp bias3[output];
 
+static double inputd[inputSize];
+static double w1d[m1][inputSize];//[rows][cols]
+static double bias1d[m1];
+
+static double w2d[m2][m1];
+static double bias2d[m2];
+
+static double w3d[output][m2];
+static double bias3d[output];
+
 void initialize(void *param) {
     time_t t;
-    srand(5);
+    srand(3);
 
-    // initialize parameters
     for(int i=0; i<inputSize; i++)
     {
-        input[i] = 1<<16;//(fixp)rand()/(fixp)(RAND_MAX/10.0);
+        inputd[i] = (double)rand()/(double)(RAND_MAX/10.0);
     }
     for(int i=0; i<m1; i++)
     {
         for(int j=0; j<inputSize; j++)
         {
-            w1[i][j] = (1<<16);//+(1<<14);//(fixp)rand()/(fixp)(RAND_MAX/10.0);//(fixp)i;
+            w1d[i][j] = (double)rand()/(double)(RAND_MAX/10.0);//(double)i;
             // printf("%.2f, ", w1[i][j]);
         }
         // printf("\n");
     }
     for(int i=0; i<m1; i++)
     {
-        bias1[i]=(1<<16) + (1<<14);//;
+        bias1d[i]=-10.0f;
     }
 
     for(int i=0; i<m2; i++)
     {
         for(int j=0; j<m1; j++)
         {
-            w2[i][j] = 1<<16;//(fixp)rand()/(fixp)(RAND_MAX/10.0);//(fixp)i*(fixp)j;
+            w2d[i][j] = (double)rand()/(double)(RAND_MAX/10.0);//(double)i*(double)j;
         }
     }
     for(int i=0; i<m2; i++)
     {
-        bias2[i]=1<<16;//(fixp)rand()/(fixp)(RAND_MAX/10.0);//50.0f;
+        bias2d[i]=(double)rand()/(double)(RAND_MAX/10.0);//50.0f;
     }
 
     for(int i=0; i<output; i++)
     {
-        bias3[i] = 1<<16;//(fixp)rand()/(fixp)(RAND_MAX/10.0);
+        bias3d[i] = (double)rand()/(double)(RAND_MAX/10.0);
         for(int j=0; j<m2; j++)
         {
-            w3[i][j] = 1<<16;//(fixp)rand()/(fixp)(RAND_MAX/10.0);//(fixp)i*(fixp)j;
+            w3d[i][j] = (double)rand()/(double)(RAND_MAX/10.0);//(double)i*(double)j;
         }
     }
+
+    // initialize parameters
+    float_to_fixed(&inputd,inputSize, &input);
+    float_to_fixed(&w1d, m1*inputSize, &w1);
+    float_to_fixed(&bias1d, m1, &bias1 );
+    float_to_fixed(&w2d, m2*m1, &w2);
+    float_to_fixed(&bias2d, m2, &bias2);
+    float_to_fixed(&w3d, output*m2, &w3);
+    float_to_fixed(&bias3d, output, &bias3);
 }
 
 void write_data_to_file(char *filename) {
@@ -72,136 +90,69 @@ void write_data_to_file(char *filename) {
     fprintf(out_file, "{\n");
     //input
     fprintf(out_file, "\"input_size\": %d,\n", inputSize);
-    fprintf(out_file, "\"input\": [");
-    for(int i=0; i<inputSize; i++)
-    {
-        if(i>0){fprintf(out_file, ", ");}
-        if(i%20 == 19){fprintf(out_file, "\n");}
-        fprintf(out_file, "%d", input[i]);
-    }
-    fprintf(out_file, "],\n");
-
+    write_array_to_file(out_file, &inputd, inputSize, "input", 0);
+    
     //weight1
     fprintf(out_file, "\"weight1_col\": %d,\n", inputSize);
     fprintf(out_file, "\"weight1_row\": %d,\n", m1);
-    fprintf(out_file, "\"weight1\": [");
-    for(int i=0; i<m1; i++)
-    {
-        for(int j=0; j<inputSize; j++)
-        {
-            
-            if(count%20 == 19){fprintf(out_file, "\n");}
-            fprintf(out_file, "%d", w1[i][j]);
-            if((j<inputSize-1)||(i<m1-1)){fprintf(out_file, ", ");}
-            count++;
-        }
-    }
-    fprintf(out_file, "],\n");
+    write_array_to_file(out_file, &w1d, m1*inputSize, "weight1", 0);
     //bias1
     fprintf(out_file, "\"bias1_size\": %d,\n", m1);
-    fprintf(out_file, "\"bias1\": [");
-    for(int i=0; i<m1; i++)
-    {
-        if(i>0){fprintf(out_file, ", ");}
-        if(i%20 == 19){fprintf(out_file, "\n");}
-        fprintf(out_file, "%d", bias1[i]);
-    }
-    fprintf(out_file, "],\n");
-
-    //weight2
-    count = 0;
+    write_array_to_file(out_file, &bias1d, m1, "bias1", 0);
+    //weight2 
     fprintf(out_file, "\"weight2_col\": %d,\n", m1);
     fprintf(out_file, "\"weight2_row\": %d,\n", m2);
-    fprintf(out_file, "\"weight2\": [");
-   for(int i=0; i<m2; i++)
-    {
-        for(int j=0; j<m1; j++)
-        {
-            
-            if(count%20 == 19){fprintf(out_file, "\n");}
-            fprintf(out_file, "%d", w2[i][j]);
-            if((j<m1-1)||(i<m2-1)){fprintf(out_file, ", ");}
-            count++;
-        }
-    }
-    fprintf(out_file, "],\n");
+    write_array_to_file(out_file, &w2d, m2*m1, "weight2", 0);
     //bias2
     fprintf(out_file, "\"bias2_size\": %d,\n", m2);
-    fprintf(out_file, "\"bias2\": [");
-    for(int i=0; i<m2; i++)
-    {
-        if(i>0){fprintf(out_file, ", ");}
-        if(i%20 == 19){fprintf(out_file, "\n");}
-        fprintf(out_file, "%d", bias2[i]);
-    }
-    fprintf(out_file, "],\n");
-
-     //weight3
-    count = 0;
+    write_array_to_file(out_file, &bias2d, m2, "bias2", 0);
+    //weight3
     fprintf(out_file, "\"weight3_col\": %d,\n", m2);
     fprintf(out_file, "\"weight3_row\": %d,\n", output);
-    fprintf(out_file, "\"weight3\": [");
-    for(int i=0; i<output; i++)
-    {
-        for(int j=0; j<m2; j++)
-        {
-            
-            if(count%20 == 19){fprintf(out_file, "\n");}
-            fprintf(out_file, "%d", w3[i][j]);
-            if((j<m2-1)||(i<output-1)){fprintf(out_file, ", ");}
-            count++;
-        }
-    }
-    fprintf(out_file, "],\n");
+    write_array_to_file(out_file, &w3d, output*m2, "weight3", 0);
     //bias3
     fprintf(out_file, "\"bias3_size\": %d,\n", output);
-    fprintf(out_file, "\"bias3\": [");
-    for(int i=0; i<output; i++)
-    {
-        if(i>0){fprintf(out_file, ", ");}
-        if(i%20 == 19){fprintf(out_file, "\n");}
-        fprintf(out_file, "%d", bias3[i]);
-    }
-    fprintf(out_file, "]\n");
+    write_array_to_file(out_file, &bias3d, output, "bias3", 1);
+
 
     fprintf(out_file, "}");
 }
 
 int run_inference() { //change this
     initialize(NULL);
-    write_data_to_file("../WeightsAndBiases/mlp1.json");
+    write_data_to_file("../WeightsAndBiases/mlp1_fp.json");
     //first layer
     load_v(1, input, inputSize);
     load_m(2, w1, m1, inputSize);
+    printreg_segment(1, 1, 5);
+    printreg_segment(2, 10, 10);
     e_mul_mv(2, 1, m1, inputSize, 3);
     acc_col(3, m1, inputSize, 0, 4); //accumulated vector in reg4
-    printreg_segment(4, 10, 10);
     load_v_t(3, bias1, m1); //load bias in turned orientation to// change to another orientation for loading
-    printreg_segment(3, 10, 10);
     add(3, 4, 1); //add bias to vector
-    
     ReLU(1, 1);
     rotate(1);//rotate to correct the vector. May not be neccessary later
     printreg_segment(1, 10, 10);
+    
 
     // //second layer
-    // load_m(2, w2, m2, m1);
-    // e_mul_mv(2, 1, m2, m1, 3);
-    // acc_col(3, m2, m1, 0, 4);
-    // load_v_t(3, bias2, m2);
-    // add(3, 4, 1);
-    // ReLU(1, 1);
-    // rotate(1);
+    load_m(2, w2, m2, m1);
+    e_mul_mv(2, 1, m2, m1, 3);
+    acc_col(3, m2, m1, 0, 4);
+    load_v_t(3, bias2, m2);
+    add(3, 4, 1);
+    ReLU(1, 1);
+    rotate(1);
 
     // //output
-    // load_m(2, w3, output, m2);
-    // e_mul_mv(2, 1, output, m2, 3);
-    // acc_col(3, output, m2, 0, 4);
-    // load_v_t(3, bias2, m2);
-    // add(3, 4, 1);
-    // rotate(1); //rotate for now. The softmax will have to be implemented in software later.
-
-    printreg_to_file(1, 1, output, "../outputs/mlp_c_output.txt");
+    load_m(2, w3, output, m2);
+    e_mul_mv(2, 1, output, m2, 3);
+    acc_col(3, output, m2, 0, 4);
+    load_v_t(3, bias2, m2);
+    add(3, 4, 1);
+    rotate(1); //rotate for now. The softmax will have to be implemented in software later.
+    printreg_to_file(1, 1, output, "../outputs/mlp_c_fp_output.txt");
+    
     //store here
     return 0;
 }
