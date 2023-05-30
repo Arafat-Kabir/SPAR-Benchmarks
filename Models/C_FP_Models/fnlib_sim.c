@@ -141,9 +141,16 @@ void printreg_to_file(reg a, int row, int col, char *filename)
         for(int j=0; j<col; j++)
         {
             int32_t number = registers[a][(i*array_size)+j];
-            int32_t fraction = (100000*(number&(0xFFFF)))/(1<<16);
-            if(fraction < 0) {fraction *= -1;}
-            fprintf(out_file, "%d.%d, ", number>>16, fraction);
+            int32_t fraction = (100000*((int64_t)number&(int64_t)(0xFFFF)))/((int64_t)1<<16);
+            // printf("%d\n", number);
+            if(number < 0 && fraction > 0) {
+                // printf("fixing\n");
+                fraction = 100000 - fraction;
+                fprintf(out_file, "%d.%d, ", (number>>16)+1, fraction);
+            }
+            else{
+                fprintf(out_file, "%d.%d, ", number>>16, fraction);
+            }
         }
     }
 }
@@ -188,9 +195,16 @@ void printreg_segment(reg a, int row, int col){
         for(int j=0; j<col; j++)
         {
             int32_t number = registers[a][(i*array_size)+j];
-            int32_t fraction = (100000*(number&(0xFFFF)))/(1<<16);
-            if(fraction < 0) {fraction *= -1;}
-            printf("%d.%d, ", number>>16, fraction);
+            int32_t fraction = (100000*((int64_t)number&(int64_t)(0xFFFF)))/((int64_t)1<<16);
+            // printf("%d\n", number);
+            if(number < 0 && fraction > 0) {
+                // printf("fixing\n");
+                fraction = 100000 - fraction;
+                printf("%d.%d, ", (number>>16)+1, fraction);
+            }
+            else{
+                printf("%d.%d, ", number>>16, fraction);
+            }
         }
         printf("\n");
     }

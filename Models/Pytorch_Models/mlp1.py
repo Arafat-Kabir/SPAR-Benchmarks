@@ -88,22 +88,20 @@ if __name__=="__main__":
         
 
     #layer1
-    print(input)
-    print(weight1)
-    print(bias1)
-    wx1 = weight1.dot(input)
-    wx1_b = wx1+bias1
-    Relu_wx1_b = ReLU(wx1_b)
-    print(Relu_wx1_b)
-    # print(Relu_wx1_b)
+    wx1 = weight1.dot(input)#close here
+    wx1_b = wx1+bias1#seems good here
+    Relu_wx1_b = ReLU(wx1_b)#seems good here
 
     #layer2
-    wx2 = weight2.dot(Relu_wx1_b)
+    wx2 = weight2.dot(Relu_wx1_b)#slightly off
     wx2_b = wx2+bias2
-    Relu_wx2_b = ReLU(wx2_b)
+    Relu_wx2_b = ReLU(wx2_b)#slightly diff. Still close
 
     #output layer
     wx3 = weight3.dot(Relu_wx2_b)
+    # print(weight3)
+    # print(wx3)
+    print(bias3)
     wx3_b = wx3 + bias3 #needs a softmax implementation after this. Should still work.
     # Relu_wx3_b = ReLU(wx3_b)
     print(wx3_b)

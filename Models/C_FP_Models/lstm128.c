@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "fnlib.h"
+#include "fplib.h"
 #define x_size 65
 #define H0_size 128
 #define C0_size 128
@@ -8,102 +9,154 @@
 #define W2_Rows 128
 #define WFC_Rows 65
 
-double X0[x_size];
-double H0[H0_size];
-double C0[C0_size];
-//H1, C1, etc are calculated at runtime
-//Wi is for x, Wh is for H
-//Wii is for finding i, Wif is for finding f, etc
+fixp X0[x_size];
+fixp H0[H0_size];
+fixp C0[C0_size];
+
+double X0d[x_size];
+double H0d[H0_size];
+double C0d[C0_size];
 
 //----layer 1 weights and biases----//
 //weights and biases for i1 (i of layer 1)
-double Wii1[W1_Rows][x_size];
-double Bii1[W1_Rows];
-double Whi1[W1_Rows][H0_size];
-double Bhi1[W1_Rows];
+fixp Wii1[W1_Rows][x_size];
+fixp Bii1[W1_Rows];
+fixp Whi1[W1_Rows][H0_size];
+fixp Bhi1[W1_Rows];
 //f1
-double Wif1[W1_Rows][x_size];
-double Bif1[W1_Rows];
-double Whf1[W1_Rows][H0_size];
-double Bhf1[W1_Rows];
+fixp Wif1[W1_Rows][x_size];
+fixp Bif1[W1_Rows];
+fixp Whf1[W1_Rows][H0_size];
+fixp Bhf1[W1_Rows];
 //g1
-double Wig1[W1_Rows][x_size];
-double Big1[W1_Rows];
-double Whg1[W1_Rows][H0_size];
-double Bhg1[W1_Rows];
+fixp Wig1[W1_Rows][x_size];
+fixp Big1[W1_Rows];
+fixp Whg1[W1_Rows][H0_size];
+fixp Bhg1[W1_Rows];
 //o1
-double Wio1[W1_Rows][x_size];
-double Bio1[W1_Rows];
-double Who1[W1_Rows][H0_size];
-double Bho1[W1_Rows];
+fixp Wio1[W1_Rows][x_size];
+fixp Bio1[W1_Rows];
+fixp Who1[W1_Rows][H0_size];
+fixp Bho1[W1_Rows];
 
 //conversion variable (turns Ht-1 doubleo predicted x for next input)
-double Bernoulli1[x_size][W1_Rows];
+fixp Bernoulli1[x_size][W1_Rows];
 
 //----layer 2 weights and biases----//
 //i2
-double Wii2[W2_Rows][x_size];
-double Bii2[W2_Rows];
-double Whi2[W2_Rows][H0_size];
-double Bhi2[W2_Rows];
+fixp Wii2[W2_Rows][x_size];
+fixp Bii2[W2_Rows];
+fixp Whi2[W2_Rows][H0_size];
+fixp Bhi2[W2_Rows];
 //f2
-double Wif2[W2_Rows][x_size];
-double Bif2[W2_Rows];
-double Whf2[W2_Rows][H0_size];
-double Bhf2[W2_Rows];
+fixp Wif2[W2_Rows][x_size];
+fixp Bif2[W2_Rows];
+fixp Whf2[W2_Rows][H0_size];
+fixp Bhf2[W2_Rows];
 //g2
-double Wig2[W2_Rows][x_size];
-double Big2[W2_Rows];
-double Whg2[W2_Rows][H0_size];
-double Bhg2[W2_Rows];
+fixp Wig2[W2_Rows][x_size];
+fixp Big2[W2_Rows];
+fixp Whg2[W2_Rows][H0_size];
+fixp Bhg2[W2_Rows];
 //o2
-double Wio2[W2_Rows][x_size];
-double Bio2[W2_Rows];
-double Who2[W2_Rows][H0_size];
-double Bho2[W2_Rows];
+fixp Wio2[W2_Rows][x_size];
+fixp Bio2[W2_Rows];
+fixp Who2[W2_Rows][H0_size];
+fixp Bho2[W2_Rows];
 
 //----Fully Connected Layer----//
-double WFC[WFC_Rows][W2_Rows];
-double BFC[WFC_Rows];
+fixp WFC[WFC_Rows][W2_Rows];
+fixp BFC[WFC_Rows];
+
+//----layer 1 weights and biases----//
+//weights and biases for i1 (i of layer 1)
+double Wii1d[W1_Rows][x_size];
+double Bii1d[W1_Rows];
+double Whi1d[W1_Rows][H0_size];
+double Bhi1d[W1_Rows];
+//f1
+double Wif1d[W1_Rows][x_size];
+double Bif1d[W1_Rows];
+double Whf1d[W1_Rows][H0_size];
+double Bhf1d[W1_Rows];
+//g1
+double Wig1d[W1_Rows][x_size];
+double Big1d[W1_Rows];
+double Whg1d[W1_Rows][H0_size];
+double Bhg1d[W1_Rows];
+//o1
+double Wio1d[W1_Rows][x_size];
+double Bio1d[W1_Rows];
+double Who1d[W1_Rows][H0_size];
+double Bho1d[W1_Rows];
+
+//conversion variable (turns Ht-1 doubleo predicted x for next input)
+double Bernoulli1d[x_size][W1_Rows];
+
+//----layer 2 weights and biases----//
+//i2
+double Wii2d[W2_Rows][x_size];
+double Bii2d[W2_Rows];
+double Whi2d[W2_Rows][H0_size];
+double Bhi2d[W2_Rows];
+//f2
+double Wif2d[W2_Rows][x_size];
+double Bif2d[W2_Rows];
+double Whf2d[W2_Rows][H0_size];
+double Bhf2d[W2_Rows];
+//g2
+double Wig2d[W2_Rows][x_size];
+double Big2d[W2_Rows];
+double Whg2d[W2_Rows][H0_size];
+double Bhg2d[W2_Rows];
+//o2
+double Wio2d[W2_Rows][x_size];
+double Bio2d[W2_Rows];
+double Who2d[W2_Rows][H0_size];
+double Bho2d[W2_Rows];
+
+//----Fully Connected Layer----//
+double WFCd[WFC_Rows][W2_Rows];
+double BFCd[WFC_Rows];
 
 void initialize_lstm128(void *param){
     srand(24537890);
     double highestFloat = 10.0f;
     for(int i=0; i<x_size; i++){
-        X0[i] = (double)rand()/(double)(RAND_MAX/highestFloat);
+        X0d[i] = (double)rand()/(double)(RAND_MAX/highestFloat);
     }
     for(int i=0; i<H0_size; i++){
-        H0[i] = (double)rand()/(double)(RAND_MAX/highestFloat);
+        H0d[i] = (double)rand()/(double)(RAND_MAX/highestFloat);
     }
     for(int i=0; i<C0_size; i++){
-        C0[i] = (double)rand()/(double)(RAND_MAX/highestFloat);
+        C0d[i] = (double)rand()/(double)(RAND_MAX/highestFloat);
     }
     for(int i=0; i<W1_Rows; i++)
     {
-        Bii1[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
-        Bif1[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
-        Big1[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
-        Bio1[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
+        Bii1d[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
+        Bif1d[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
+        Big1d[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
+        Bio1d[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
         for(int j=0; j<x_size; j++)
         {
-            Wii1[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
-            Wif1[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
-            Wig1[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
-            Wio1[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
+            Wii1d[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
+            Wif1d[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
+            Wig1d[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
+            Wio1d[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
         }
     }
     for(int i=0; i<W1_Rows; i++)
     {
-        Bhi1[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
-        Bhf1[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
-        Bhg1[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
-        Bho1[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
+        Bhi1d[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
+        Bhf1d[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
+        Bhg1d[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
+        Bho1d[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
         for(int j=0; j<H0_size; j++)
         {
-            Whi1[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
-            Whf1[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
-            Whg1[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
-            Who1[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
+            Whi1d[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
+            Whf1d[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
+            Whg1d[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
+            Who1d[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
         }
     }
     //dropout
@@ -112,48 +165,92 @@ void initialize_lstm128(void *param){
         for(int j=0; j<W1_Rows; j++)
         {
             int r = rand()%2;
-            if(r==1){Bernoulli1[i][j] = 1.0f;}
-            else {Bernoulli1[i][j] = 0.0f;}
+            if(r==1){Bernoulli1d[i][j] = 1.0f;}
+            else {Bernoulli1d[i][j] = 0.0f;}
             
         }
     }
 
     for(int i=0; i<W2_Rows; i++)
     {
-        Bii2[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
-        Bif2[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
-        Big2[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
-        Bio2[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
+        Bii2d[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
+        Bif2d[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
+        Big2d[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
+        Bio2d[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
         for(int j=0; j<x_size; j++)
         {
-            Wii2[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
-            Wif2[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
-            Wig2[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
-            Wio2[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
+            Wii2d[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
+            Wif2d[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
+            Wig2d[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
+            Wio2d[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
         }
     }
     for(int i=0; i<W2_Rows; i++)
     {
-        Bhi2[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
-        Bhf2[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
-        Bhg2[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
-        Bho2[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
+        Bhi2d[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
+        Bhf2d[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
+        Bhg2d[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
+        Bho2d[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
         for(int j=0; j<W1_Rows; j++)
         {
-            Whi2[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
-            Whf2[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
-            Whg2[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
-            Who2[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
+            Whi2d[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
+            Whf2d[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
+            Whg2d[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
+            Who2d[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
         }
     }
     for(int i=0; i<WFC_Rows; i++)
     {
-        BFC[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
+        BFCd[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
         for(int j=0; j<W2_Rows; j++)
         {
-            WFC[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
+            WFCd[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
         }
     }
+    
+    fixp X0[x_size];
+    fixp H0[H0_size];
+    fixp C0[C0_size];
+    float_to_fixed(&X0d, x_size, &X0);
+    float_to_fixed(&H0d, H0_size, &H0);
+    float_to_fixed(&C0d, C0_size, &C0);
+
+    float_to_fixed(&Wii1d, W1_Rows*x_size, &Wii1);
+    float_to_fixed(&Bii1d, W1_Rows, &Bii1);
+    float_to_fixed(&Whi1d, W1_Rows*H0_size, &Whi1);
+    float_to_fixed(&Bhi1d, W1_Rows, &Bhi1);
+    float_to_fixed(&Wif1d, W1_Rows*x_size, &Wif1);
+    float_to_fixed(&Bif1d, W1_Rows, &Bif1);
+    float_to_fixed(&Whf1d, W1_Rows*H0_size, &Whf1);
+    float_to_fixed(&Bhf1d, W1_Rows, &Bhf1);
+    float_to_fixed(&Wig1d, W1_Rows*x_size, &Wig1);
+    float_to_fixed(&Big1d, W1_Rows, &Big1);
+    float_to_fixed(&Whg1d, W1_Rows*H0_size, &Whg1);
+    float_to_fixed(&Bhg1d, W1_Rows, &Bhg1);
+    float_to_fixed(&Wio1d, W1_Rows*x_size, &Wio1);
+    float_to_fixed(&Bio1d, W1_Rows, &Bio1);
+    float_to_fixed(&Who1d, W1_Rows*H0_size, &Who1);
+    float_to_fixed(&Bho1d, W1_Rows, &Bho1);
+
+    float_to_fixed(&Wii2d, W2_Rows*x_size, &Wii2);
+    float_to_fixed(&Bii2d, W2_Rows, &Bii2);
+    float_to_fixed(&Whi2d, W2_Rows*W1_Rows, &Whi2);
+    float_to_fixed(&Bhi2d, W2_Rows, &Bhi2);
+    float_to_fixed(&Wif2d, W2_Rows*x_size, &Wif2);
+    float_to_fixed(&Bif2d, W2_Rows, &Bif2);
+    float_to_fixed(&Whf2d, W2_Rows*W1_Rows, &Whf2);
+    float_to_fixed(&Bhf2d, W2_Rows, &Bhf2);
+    float_to_fixed(&Wig2d, W2_Rows*x_size, &Wig2);
+    float_to_fixed(&Big2d, W2_Rows, &Big2);
+    float_to_fixed(&Whg2d, W2_Rows*W1_Rows, &Whg2);
+    float_to_fixed(&Bhg2d, W2_Rows, &Bhg2);
+    float_to_fixed(&Wio2d, W2_Rows*x_size, &Wio2);
+    float_to_fixed(&Bio2d, W2_Rows, &Bio2);
+    float_to_fixed(&Who2d, W2_Rows*W1_Rows, &Who2);
+    float_to_fixed(&Bho2d, W2_Rows, &Bho2);
+
+    float_to_fixed(&WFCd, WFC_Rows*W2_Rows, WFC);
+    float_to_fixed(&BFCd, WFC_Rows, BFC);
     return;
 }
 
@@ -299,7 +396,7 @@ void lstm128_to_json(char *filename){
 
 int run_inference_lstm128(){
     initialize_lstm128(NULL);
-    lstm128_to_json("../WeightsAndBiases/lstm128.json");
+    lstm128_to_json("../WeightsAndBiases/lstm128_fp.json");
     //void lstm_gate(x,Wi,Bi,h,Wh,Bh,x_size,h_size,output_size,act_func,temp1,temp2,temp3,des)
     
     //-----------------------Layer 1--------------------------//
@@ -315,7 +412,7 @@ int run_inference_lstm128(){
     load_v_t(6, Bif1, W1_Rows);
     //i in register 7. 29, 30, and 31 are for temporary registers
     lstm_gate(1,2,3,4,5,6, x_size, H0_size, W1_Rows, 1, 29, 30, 31, 7); //i1 in 7
-
+    printreg_segment(7, 10, 10);
     //calculate f1
     load_m(2, Wif1, W1_Rows, x_size);
     load_v_t(3, Bif1, W1_Rows);
