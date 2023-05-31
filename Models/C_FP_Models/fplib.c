@@ -63,7 +63,7 @@ fixp fp_mul(fixp a, fixp b){
     return c;
 }
 
-void float_to_fixed(void *input_double, int size, void *result_fp)
+void float_to_fixed_array(void *input_double, int size, void *result_fp)
 {
     fixp *result = (fixp *) result_fp;
     double *a = (double *) input_double;
@@ -77,4 +77,18 @@ void float_to_fixed(void *input_double, int size, void *result_fp)
         // printf("input: %lf, whole: %d, frac: %lf, final: %d \n", a[i], whole, fraction, result[i]);
     }
     return;
+}
+
+double fixed_to_double(fixp fixed){
+    double converted = ((double)fixed)/((double)(1<<16));
+    return converted;
+}
+
+fixp double_to_fixed(double number){
+    fixp result = 0;
+    fixp whole = floor(number);
+    double fraction = number-(double)whole;
+    fixp frac_fp = (fixp)(fraction * ((double)(1<<16)));
+    result = (whole<<16) + (frac_fp);
+    return result;
 }

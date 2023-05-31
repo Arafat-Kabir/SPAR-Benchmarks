@@ -15,5 +15,7 @@ typedef int32_t fixp;
 // fpvar fp_mul(fpvar a, fpvar b);
 
 fixp fp_mul(fixp a, fixp b);
-void float_to_fixed(void *input_double, int size, void *result_fp);
+void float_to_fixed_array(void *input_double, int size, void *result_fp);
+double fixed_to_double(fixp fixed);
+fixp double_to_fixed(double number);
 #endif

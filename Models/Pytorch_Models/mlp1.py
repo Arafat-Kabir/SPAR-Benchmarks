@@ -3,10 +3,10 @@ import json
 import sys
 import os
 
-inputsize = 784
-m1 = 100
-m2 = 100
-output = 10
+inputsize = 16
+m1 = 10
+m2 = 10
+output = 8
 #[row, columns]
 input = np.empty(inputsize, dtype=float)
 weight1 = np.empty([m1, inputsize], dtype=float)
@@ -91,17 +91,15 @@ if __name__=="__main__":
     wx1 = weight1.dot(input)#close here
     wx1_b = wx1+bias1#seems good here
     Relu_wx1_b = ReLU(wx1_b)#seems good here
+    print(Relu_wx1_b)
 
     #layer2
     wx2 = weight2.dot(Relu_wx1_b)#slightly off
     wx2_b = wx2+bias2
     Relu_wx2_b = ReLU(wx2_b)#slightly diff. Still close
-
+    print(Relu_wx2_b)
     #output layer
     wx3 = weight3.dot(Relu_wx2_b)
-    # print(weight3)
-    # print(wx3)
-    print(bias3)
     wx3_b = wx3 + bias3 #needs a softmax implementation after this. Should still work.
     # Relu_wx3_b = ReLU(wx3_b)
     print(wx3_b)

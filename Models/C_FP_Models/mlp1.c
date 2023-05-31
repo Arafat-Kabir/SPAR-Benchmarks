@@ -5,10 +5,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#define inputSize 784//784
-#define m1 100
-#define m2 100
-#define output 10 //output
+#define inputSize 16//784
+#define m1 10
+#define m2 10
+#define output 8 //output
 
 
 static fixp input[inputSize];
@@ -75,13 +75,13 @@ void initialize(void *param) {
     }
 
     // initialize parameters
-    float_to_fixed(&inputd,inputSize, &input);
-    float_to_fixed(&w1d, m1*inputSize, &w1);
-    float_to_fixed(&bias1d, m1, &bias1 );
-    float_to_fixed(&w2d, m2*m1, &w2);
-    float_to_fixed(&bias2d, m2, &bias2);
-    float_to_fixed(&w3d, output*m2, &w3);
-    float_to_fixed(&bias3d, output, &bias3);
+    float_to_fixed_array(&inputd,inputSize, &input);
+    float_to_fixed_array(&w1d, m1*inputSize, &w1);
+    float_to_fixed_array(&bias1d, m1, &bias1 );
+    float_to_fixed_array(&w2d, m2*m1, &w2);
+    float_to_fixed_array(&bias2d, m2, &bias2);
+    float_to_fixed_array(&w3d, output*m2, &w3);
+    float_to_fixed_array(&bias3d, output, &bias3);
     // for(int i=0; i<inputSize; i++)
     // {
     //     int32_t number = input[i];

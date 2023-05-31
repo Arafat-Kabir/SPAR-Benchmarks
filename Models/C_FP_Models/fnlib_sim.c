@@ -176,14 +176,19 @@ void activation(reg a, reg des, acttype act){
     {
         for(int i=0; i<array_size; i++) //go along the first column; write to first row
         {
-            registers[des][i] = (1.0/(1.0 + pow(EULER_NUMBER, -1.0 * registers[a][i*array_size])));
+            double converted = double_to_fixed(registers[a][i*array_size]);
+            // printf("%lf,\n", converted);
+            double result = (1.0/(1.0 + pow(EULER_NUMBER, -1.0 * converted)));
+            registers[des][i] = double_to_fixed(result);
         }
     }
     if(act == 2) //sigmoid
     {
         for(int i=0; i<array_size; i++) //go along the first column; write to first row
         {
-            registers[des][i] = tanh(registers[a][i*array_size]);
+            double converted = double_to_fixed(registers[a][i*array_size]);
+            double result = tanh(converted);
+            registers[des][i] = double_to_fixed(result);
         }
     }
     return;

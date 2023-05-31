@@ -5,7 +5,7 @@
 
 int main() {
     // initialize(p);
-    // run_inference();
-    run_inference_lstm128();
+    run_inference(); //for mlp1
+    // run_inference_lstm128(); //for lstm128
     return 0;
 }
