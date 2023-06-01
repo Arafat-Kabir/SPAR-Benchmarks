@@ -246,7 +246,6 @@ if __name__=="__main__":
     #fully connected layer using just the layer 2 hidden state for now
     WfcH = W_FC.dot(h_l2)
     WfcH_b = WfcH + B_FC
-    
     fout = open("../outputs/lstm128_python_output.txt", "w")
     for i in range(outputsize):
         fout.write("{:.4f},\n".format(WfcH_b[i]))
