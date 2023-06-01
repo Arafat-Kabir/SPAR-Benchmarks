@@ -10,8 +10,10 @@ layer2Size = 128
 outputsize = 65
 
 input = np.empty([inputsize])
-c0 = np.empty([cSize])
-h0 = np.empty([hSize])
+c0_l1 = np.empty([cSize])
+h0_l1 = np.empty([hSize])
+c0_l2 = np.empty([cSize])
+h0_l2 = np.empty([hSize])
 output = np.empty([outputsize])
 #layer 1 weights
 #for i1
@@ -86,10 +88,10 @@ def Gate(x, Wi, Bi, h, Wh, Bh, act_func):
        return Result
 
 def Populate():
-    global input, c0, h0
+    global input, c0_l1, h0_l1
     input = np.ones(inputsize)
-    c0 = np.ones(128)
-    h0 = np.ones(128)
+    c0_l1 = np.ones(128)
+    h0_l1 = np.ones(128)
 
     global Wii1, Bii1, Whi1, Bhi1
     Wii1 = np.ones([layer1Size, inputsize])
@@ -162,10 +164,10 @@ def LoadWeights(file_name):
         layer1Size = data['W1_Rows']
         layer2Size = data['W2_Rows']
         outputsize = data['Output_Size']
-        global input, h0, c0
+        global input, h0_l1, c0_l1
         input = np.array(data['Input'])
-        h0 = np.array(data['H0'])
-        c0 = np.array(data['C0'])
+        h0_l1 = np.array(data['H0'])
+        c0_l1 = np.array(data['C0'])
         global Wii1, Bii1, Whi1, Bhi1
         Wii1 = np.array(data['Wii1']).reshape([layer1Size, inputsize])
         Bii1 = np.array(data['Bii1'])
@@ -223,11 +225,11 @@ if __name__=="__main__":
         else:
             print("Cannot Find Specified File")
     #lstmlayer 1
-    i1 = Gate(x=input, Wi=Wii1, Bi=Bii1, h=h0, Wh=Whi1, Bh=Bhi1, act_func='sigmoid')
-    f1 = Gate(x=input, Wi=Wif1, Bi=Bif1, h=h0, Wh=Whf1, Bh=Bhf1, act_func='sigmoid')
-    g1 = Gate(x=input, Wi=Wig1, Bi=Big1, h=h0, Wh=Whg1, Bh=Bhg1, act_func='tanh')
-    o1 = Gate(x=input, Wi=Wio1, Bi=Bio1, h=h0, Wh=Who1, Bh=Bho1, act_func='sigmoid')
-    c1 = (f1*c0) + (i1*g1)
+    i1 = Gate(x=input, Wi=Wii1, Bi=Bii1, h=h0_l1, Wh=Whi1, Bh=Bhi1, act_func='sigmoid')
+    f1 = Gate(x=input, Wi=Wif1, Bi=Bif1, h=h0_l1, Wh=Whf1, Bh=Bhf1, act_func='sigmoid')
+    g1 = Gate(x=input, Wi=Wig1, Bi=Big1, h=h0_l1, Wh=Whg1, Bh=Bhg1, act_func='tanh')
+    o1 = Gate(x=input, Wi=Wio1, Bi=Bio1, h=h0_l1, Wh=Who1, Bh=Bho1, act_func='sigmoid')
+    c1 = (f1*c0_l1) + (i1*g1)
     h1 = o1*(np.tanh(c1))
     x1  = Dropout1.dot(h1)
     # print(Bii1)
