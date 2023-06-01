@@ -10,33 +10,33 @@
 #define WFC_Rows 65
 
 fixp X0[x_size];
-fixp H0[H0_size];
-fixp C0[C0_size];
+fixp H0[H_size];
+fixp C0[C_size];
 
 double X0d[x_size];
-double H0d[H0_size];
-double C0d[C0_size];
+double H0d[H_size];
+double C0d[C_size];
 
 //----layer 1 weights and biases----//
 //weights and biases for i1 (i of layer 1)
 fixp Wii1[W1_Rows][x_size];
 fixp Bii1[W1_Rows];
-fixp Whi1[W1_Rows][H0_size];
+fixp Whi1[W1_Rows][H_size];
 fixp Bhi1[W1_Rows];
 //f1
 fixp Wif1[W1_Rows][x_size];
 fixp Bif1[W1_Rows];
-fixp Whf1[W1_Rows][H0_size];
+fixp Whf1[W1_Rows][H_size];
 fixp Bhf1[W1_Rows];
 //g1
 fixp Wig1[W1_Rows][x_size];
 fixp Big1[W1_Rows];
-fixp Whg1[W1_Rows][H0_size];
+fixp Whg1[W1_Rows][H_size];
 fixp Bhg1[W1_Rows];
 //o1
 fixp Wio1[W1_Rows][x_size];
 fixp Bio1[W1_Rows];
-fixp Who1[W1_Rows][H0_size];
+fixp Who1[W1_Rows][H_size];
 fixp Bho1[W1_Rows];
 
 //conversion variable (turns Ht-1 doubleo predicted x for next input)
@@ -46,22 +46,22 @@ fixp Bernoulli1[x_size][W1_Rows];
 //i2
 fixp Wii2[W2_Rows][x_size];
 fixp Bii2[W2_Rows];
-fixp Whi2[W2_Rows][H0_size];
+fixp Whi2[W2_Rows][H_size];
 fixp Bhi2[W2_Rows];
 //f2
 fixp Wif2[W2_Rows][x_size];
 fixp Bif2[W2_Rows];
-fixp Whf2[W2_Rows][H0_size];
+fixp Whf2[W2_Rows][H_size];
 fixp Bhf2[W2_Rows];
 //g2
 fixp Wig2[W2_Rows][x_size];
 fixp Big2[W2_Rows];
-fixp Whg2[W2_Rows][H0_size];
+fixp Whg2[W2_Rows][H_size];
 fixp Bhg2[W2_Rows];
 //o2
 fixp Wio2[W2_Rows][x_size];
 fixp Bio2[W2_Rows];
-fixp Who2[W2_Rows][H0_size];
+fixp Who2[W2_Rows][H_size];
 fixp Bho2[W2_Rows];
 
 //----Fully Connected Layer----//
@@ -72,22 +72,22 @@ fixp BFC[WFC_Rows];
 //weights and biases for i1 (i of layer 1)
 double Wii1d[W1_Rows][x_size];
 double Bii1d[W1_Rows];
-double Whi1d[W1_Rows][H0_size];
+double Whi1d[W1_Rows][H_size];
 double Bhi1d[W1_Rows];
 //f1
 double Wif1d[W1_Rows][x_size];
 double Bif1d[W1_Rows];
-double Whf1d[W1_Rows][H0_size];
+double Whf1d[W1_Rows][H_size];
 double Bhf1d[W1_Rows];
 //g1
 double Wig1d[W1_Rows][x_size];
 double Big1d[W1_Rows];
-double Whg1d[W1_Rows][H0_size];
+double Whg1d[W1_Rows][H_size];
 double Bhg1d[W1_Rows];
 //o1
 double Wio1d[W1_Rows][x_size];
 double Bio1d[W1_Rows];
-double Who1d[W1_Rows][H0_size];
+double Who1d[W1_Rows][H_size];
 double Bho1d[W1_Rows];
 
 //conversion variable (turns Ht-1 doubleo predicted x for next input)
@@ -97,22 +97,22 @@ double Bernoulli1d[x_size][W1_Rows];
 //i2
 double Wii2d[W2_Rows][x_size];
 double Bii2d[W2_Rows];
-double Whi2d[W2_Rows][H0_size];
+double Whi2d[W2_Rows][H_size];
 double Bhi2d[W2_Rows];
 //f2
 double Wif2d[W2_Rows][x_size];
 double Bif2d[W2_Rows];
-double Whf2d[W2_Rows][H0_size];
+double Whf2d[W2_Rows][H_size];
 double Bhf2d[W2_Rows];
 //g2
 double Wig2d[W2_Rows][x_size];
 double Big2d[W2_Rows];
-double Whg2d[W2_Rows][H0_size];
+double Whg2d[W2_Rows][H_size];
 double Bhg2d[W2_Rows];
 //o2
 double Wio2d[W2_Rows][x_size];
 double Bio2d[W2_Rows];
-double Who2d[W2_Rows][H0_size];
+double Who2d[W2_Rows][H_size];
 double Bho2d[W2_Rows];
 
 //----Fully Connected Layer----//
@@ -125,10 +125,10 @@ void initialize_lstm128(void *param){
     for(int i=0; i<x_size; i++){
         X0d[i] = (double)rand()/(double)(RAND_MAX/highestFloat);
     }
-    for(int i=0; i<H0_size; i++){
+    for(int i=0; i<H_size; i++){
         H0d[i] = (double)rand()/(double)(RAND_MAX/highestFloat);
     }
-    for(int i=0; i<C0_size; i++){
+    for(int i=0; i<C_size; i++){
         C0d[i] = (double)rand()/(double)(RAND_MAX/highestFloat);
     }
     for(int i=0; i<W1_Rows; i++)
@@ -151,7 +151,7 @@ void initialize_lstm128(void *param){
         Bhf1d[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
         Bhg1d[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
         Bho1d[i]=(double)rand()/(double)(RAND_MAX/highestFloat);
-        for(int j=0; j<H0_size; j++)
+        for(int j=0; j<H_size; j++)
         {
             Whi1d[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
             Whf1d[i][j]=(double)rand()/(double)(RAND_MAX/highestFloat);
@@ -209,27 +209,27 @@ void initialize_lstm128(void *param){
     }
     
     fixp X0[x_size];
-    fixp H0[H0_size];
-    fixp C0[C0_size];
+    fixp H0[H_size];
+    fixp C0[C_size];
     float_to_fixed_array(&X0d, x_size, &X0);
-    float_to_fixed_array(&H0d, H0_size, &H0);
-    float_to_fixed_array(&C0d, C0_size, &C0);
+    float_to_fixed_array(&H0d, H_size, &H0);
+    float_to_fixed_array(&C0d, C_size, &C0);
 
     float_to_fixed_array(&Wii1d, W1_Rows*x_size, &Wii1);
     float_to_fixed_array(&Bii1d, W1_Rows, &Bii1);
-    float_to_fixed_array(&Whi1d, W1_Rows*H0_size, &Whi1);
+    float_to_fixed_array(&Whi1d, W1_Rows*H_size, &Whi1);
     float_to_fixed_array(&Bhi1d, W1_Rows, &Bhi1);
     float_to_fixed_array(&Wif1d, W1_Rows*x_size, &Wif1);
     float_to_fixed_array(&Bif1d, W1_Rows, &Bif1);
-    float_to_fixed_array(&Whf1d, W1_Rows*H0_size, &Whf1);
+    float_to_fixed_array(&Whf1d, W1_Rows*H_size, &Whf1);
     float_to_fixed_array(&Bhf1d, W1_Rows, &Bhf1);
     float_to_fixed_array(&Wig1d, W1_Rows*x_size, &Wig1);
     float_to_fixed_array(&Big1d, W1_Rows, &Big1);
-    float_to_fixed_array(&Whg1d, W1_Rows*H0_size, &Whg1);
+    float_to_fixed_array(&Whg1d, W1_Rows*H_size, &Whg1);
     float_to_fixed_array(&Bhg1d, W1_Rows, &Bhg1);
     float_to_fixed_array(&Wio1d, W1_Rows*x_size, &Wio1);
     float_to_fixed_array(&Bio1d, W1_Rows, &Bio1);
-    float_to_fixed_array(&Who1d, W1_Rows*H0_size, &Who1);
+    float_to_fixed_array(&Who1d, W1_Rows*H_size, &Who1);
     float_to_fixed_array(&Bho1d, W1_Rows, &Bho1);
 
     float_to_fixed_array(&Wii2d, W2_Rows*x_size, &Wii2);
@@ -258,10 +258,10 @@ void populate_lstm128_1s(){
     for(int i=0; i<x_size; i++){
         X0[i] = 1.0f;
     }
-    for(int i=0; i<H0_size; i++){
+    for(int i=0; i<H_size; i++){
         H0[i] = 1.0f;
     }
-    for(int i=0; i<C0_size; i++){
+    for(int i=0; i<C_size; i++){
         C0[i] = 1.0f;
     }
     for(int i=0; i<W1_Rows; i++)
@@ -284,7 +284,7 @@ void populate_lstm128_1s(){
         Bhf1[i]=1.0f;
         Bhg1[i]=1.0f;
         Bho1[i]=1.0f;
-        for(int j=0; j<H0_size; j++)
+        for(int j=0; j<H_size; j++)
         {
             Whi1[i][j]=1.0f;
             Whf1[i][j]=1.0f;
@@ -343,30 +343,30 @@ void lstm128_to_json(char *filename){
     FILE *outfile = fopen(filename, "w");
     fprintf(outfile, "{\n");
     fprintf(outfile, "\"X_Size\": %d,\n", x_size);
-    fprintf(outfile, "\"H_Size\": %d,\n", H0_size);
-    fprintf(outfile, "\"C_Size\": %d,\n", C0_size);
+    fprintf(outfile, "\"H_Size\": %d,\n", H_size);
+    fprintf(outfile, "\"C_Size\": %d,\n", C_size);
     fprintf(outfile, "\"W1_Rows\": %d,\n", W1_Rows);
     fprintf(outfile, "\"W2_Rows\": %d,\n", W2_Rows);
     fprintf(outfile, "\"Output_Size\": %d,\n", WFC_Rows);
     write_array_to_file(outfile, X0, x_size, "Input", 0);
-    write_array_to_file(outfile, H0, H0_size, "H0", 0);
-    write_array_to_file(outfile, C0, C0_size, "C0", 0);
+    write_array_to_file(outfile, H0, H_size, "H0", 0);
+    write_array_to_file(outfile, C0, C_size, "C0", 0);
     //weights and biases
     write_array_to_file(outfile, Wii1, x_size*W1_Rows, "Wii1", 0);
     write_array_to_file(outfile, Bii1, W1_Rows, "Bii1", 0);
-    write_array_to_file(outfile, Whi1, H0_size*W1_Rows, "Whi1", 0);
+    write_array_to_file(outfile, Whi1, H_size*W1_Rows, "Whi1", 0);
     write_array_to_file(outfile, Bhi1, W1_Rows, "Bhi1", 0);
     write_array_to_file(outfile, Wif1, x_size*W1_Rows, "Wif1", 0);
     write_array_to_file(outfile, Bif1, W1_Rows, "Bif1", 0);
-    write_array_to_file(outfile, Whf1, H0_size*W1_Rows, "Whf1", 0);
+    write_array_to_file(outfile, Whf1, H_size*W1_Rows, "Whf1", 0);
     write_array_to_file(outfile, Bhf1, W1_Rows, "Bhf1", 0);
     write_array_to_file(outfile, Wig1, x_size*W1_Rows, "Wig1", 0);
     write_array_to_file(outfile, Big1, W1_Rows, "Big1", 0);
-    write_array_to_file(outfile, Whg1, H0_size*W1_Rows, "Whg1", 0);
+    write_array_to_file(outfile, Whg1, H_size*W1_Rows, "Whg1", 0);
     write_array_to_file(outfile, Bhg1, W1_Rows, "Bhg1", 0);
     write_array_to_file(outfile, Wio1, x_size*W1_Rows, "Wio1", 0);
     write_array_to_file(outfile, Bio1, W1_Rows, "Bio1", 0);
-    write_array_to_file(outfile, Who1, H0_size*W1_Rows, "Who1", 0);
+    write_array_to_file(outfile, Who1, H_size*W1_Rows, "Who1", 0);
     write_array_to_file(outfile, Bho1, W1_Rows, "Bho1", 0);
 
     write_array_to_file(outfile, Bernoulli1, W1_Rows*x_size, "Dropout1", 0);
@@ -407,33 +407,33 @@ int run_inference_lstm128(){
     load_v(1, X0, x_size);
     load_m(2, Wii1, W1_Rows, x_size);
     load_v_t(3, Bii1, W1_Rows);
-    load_v(4, H0, H0_size);
-    load_m(5, Whi1, W1_Rows, H0_size);
+    load_v(4, H0, H_size);
+    load_m(5, Whi1, W1_Rows, H_size);
     load_v_t(6, Bif1, W1_Rows);
     //i in register 7. 29, 30, and 31 are for temporary registers
-    lstm_gate(1,2,3,4,5,6, x_size, H0_size, W1_Rows, 1, 29, 30, 31, 7); //i1 in 7
+    lstm_gate(1,2,3,4,5,6, x_size, H_size, W1_Rows, 1, 29, 30, 31, 7); //i1 in 7
     printreg_segment(7, 10, 10);
     //calculate f1
     load_m(2, Wif1, W1_Rows, x_size);
     load_v_t(3, Bif1, W1_Rows);
-    load_m(5, Whf1, W1_Rows, H0_size);
+    load_m(5, Whf1, W1_Rows, H_size);
     load_v_t(6, Bhf1, W1_Rows);
-    lstm_gate(1,2,3,4,5,6, x_size, H0_size, W1_Rows, 1, 29, 30, 31, 8); //f1 in reg 8
+    lstm_gate(1,2,3,4,5,6, x_size, H_size, W1_Rows, 1, 29, 30, 31, 8); //f1 in reg 8
 
     //calculate g
     load_m(2, Wig1, W1_Rows, x_size);
     load_v_t(3, Big1, W1_Rows);
-    load_m(5, Whg1, W1_Rows, H0_size);
+    load_m(5, Whg1, W1_Rows, H_size);
     load_v_t(6, Bhg1, W1_Rows);                  // vvv for tanh
-    lstm_gate(1,2,3,4,5,6, x_size, H0_size, W1_Rows, 2, 29, 30, 31, 9); //g1 in reg 9
+    lstm_gate(1,2,3,4,5,6, x_size, H_size, W1_Rows, 2, 29, 30, 31, 9); //g1 in reg 9
     //calculate o
     load_m(2, Wio1, W1_Rows, x_size);
     load_v_t(3, Bio1, W1_Rows);
-    load_m(5, Who1, W1_Rows, H0_size);
+    load_m(5, Who1, W1_Rows, H_size);
     load_v_t(6, Bho1, W1_Rows);
-    lstm_gate(1,2,3,4,5,6, x_size, H0_size, W1_Rows, 1, 29, 30, 31, 10); //o1 in reg 10
+    lstm_gate(1,2,3,4,5,6, x_size, H_size, W1_Rows, 1, 29, 30, 31, 10); //o1 in reg 10
     //calculate C1
-    load_v(12, C0, C0_size); //C0 in reg 12
+    load_v(12, C0, C_size); //C0 in reg 12
     e_mul(8, 12, 13); //f1*c0 in reg 13
     e_mul(7, 9, 14);//i1*g1 in reg 14 
     add(13, 14, 12); //overwrite with C1 in 12

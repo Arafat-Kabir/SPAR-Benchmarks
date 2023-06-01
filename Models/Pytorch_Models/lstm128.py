@@ -10,10 +10,10 @@ layer2Size = 128
 outputsize = 65
 
 input = np.empty([inputsize])
-c0_l1 = np.empty([cSize])
-h0_l1 = np.empty([hSize])
-c0_l2 = np.empty([cSize])
-h0_l2 = np.empty([hSize])
+c_l1 = np.empty([cSize])
+h_l1 = np.empty([hSize])
+c_l2 = np.empty([cSize])
+h_l2 = np.empty([hSize])
 output = np.empty([outputsize])
 #layer 1 weights
 #for i1
@@ -88,10 +88,11 @@ def Gate(x, Wi, Bi, h, Wh, Bh, act_func):
        return Result
 
 def Populate():
-    global input, c0_l1, h0_l1
+    global input, c_l1, h_l1
     input = np.ones(inputsize)
-    c0_l1 = np.ones(128)
-    h0_l1 = np.ones(128)
+    #leaving cell and hidden states as 0 for now
+    # c0_l1 = np.ones(128)
+    # h0_l1 = np.ones(128)
 
     global Wii1, Bii1, Whi1, Bhi1
     Wii1 = np.ones([layer1Size, inputsize])
@@ -164,10 +165,10 @@ def LoadWeights(file_name):
         layer1Size = data['W1_Rows']
         layer2Size = data['W2_Rows']
         outputsize = data['Output_Size']
-        global input, h0_l1, c0_l1
+        global input, h_l1, c_l1
         input = np.array(data['Input'])
-        h0_l1 = np.array(data['H0'])
-        c0_l1 = np.array(data['C0'])
+        h_l1 = np.array(data['H0'])
+        c_l1 = np.array(data['C0'])
         global Wii1, Bii1, Whi1, Bhi1
         Wii1 = np.array(data['Wii1']).reshape([layer1Size, inputsize])
         Bii1 = np.array(data['Bii1'])
@@ -225,36 +226,23 @@ if __name__=="__main__":
         else:
             print("Cannot Find Specified File")
     #lstmlayer 1
-    i1 = Gate(x=input, Wi=Wii1, Bi=Bii1, h=h0_l1, Wh=Whi1, Bh=Bhi1, act_func='sigmoid')
-    f1 = Gate(x=input, Wi=Wif1, Bi=Bif1, h=h0_l1, Wh=Whf1, Bh=Bhf1, act_func='sigmoid')
-    g1 = Gate(x=input, Wi=Wig1, Bi=Big1, h=h0_l1, Wh=Whg1, Bh=Bhg1, act_func='tanh')
-    o1 = Gate(x=input, Wi=Wio1, Bi=Bio1, h=h0_l1, Wh=Who1, Bh=Bho1, act_func='sigmoid')
-    c1 = (f1*c0_l1) + (i1*g1)
-    h1 = o1*(np.tanh(c1))
-    x1  = Dropout1.dot(h1)
-    # print(Bii1)
-    # print(i1)
-    # print(f1)
-    # print(g1)
-    # print(o1)
-    # print(x1)
-    # print(f1*c0)
-    # print(c1)
+    i1 = Gate(x=input, Wi=Wii1, Bi=Bii1, h=h_l1, Wh=Whi1, Bh=Bhi1, act_func='sigmoid')
+    f1 = Gate(x=input, Wi=Wif1, Bi=Bif1, h=h_l1, Wh=Whf1, Bh=Bhf1, act_func='sigmoid')
+    g1 = Gate(x=input, Wi=Wig1, Bi=Big1, h=h_l1, Wh=Whg1, Bh=Bhg1, act_func='tanh')
+    o1 = Gate(x=input, Wi=Wio1, Bi=Bio1, h=h_l1, Wh=Who1, Bh=Bho1, act_func='sigmoid')
+    c_l1 = (f1*c_l1) + (i1*g1) #update the cell state
+    h_l1 = o1*(np.tanh(c_l1)) #update the hidden state
+    x1  = Dropout1.dot(h_l1) #predict x to feed the next layer
+
     #lstmlayer 2
     i2 = Gate(x=x1, Wi=Wii2, Bi=Bii2, h=h1, Wh=Whi2, Bh=Bhi2, act_func='sigmoid')
     f2 = Gate(x=x1, Wi=Wif2, Bi=Bif2, h=h1, Wh=Whf2, Bh=Bhf2, act_func='sigmoid')
     g2 = Gate(x=x1, Wi=Wig2, Bi=Big2, h=h1, Wh=Whg2, Bh=Bhg2, act_func='tanh')
     o2 = Gate(x=x1, Wi=Wio2, Bi=Bio2, h=h1, Wh=Who2, Bh=Bho2, act_func='sigmoid')
-    c2 = (f2*c1) + (i2*g2)
-    h2 = o1*(np.tanh(c2))
-    # print(i2)
-    # print(f2)
-    # print(g2)
-    # print(o2)
-    # print(c2)
-    # print(h2)
-    #fully
-    WfcH = W_FC.dot(h2)
+    c_l2 = (f2*c_l2) + (i2*g2) #update the cell state for layer 2
+    h_l2 = o1*(np.tanh(c_l2)) #update the hidden state for layer 2
+    #fully connected layer using just the layer 2 hidden state for now
+    WfcH = W_FC.dot(h_l2)
     # print(WfcH)
     WfcH_b = WfcH + B_FC
     print(B_FC)
