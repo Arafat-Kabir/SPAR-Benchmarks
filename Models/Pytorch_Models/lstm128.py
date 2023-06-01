@@ -165,10 +165,12 @@ def LoadWeights(file_name):
         layer1Size = data['W1_Rows']
         layer2Size = data['W2_Rows']
         outputsize = data['Output_Size']
-        global input, h_l1, c_l1
+        global input, h_l1, c_l1, h_l2, c_l2
         input = np.array(data['Input'])
-        h_l1 = np.array(data['H0'])
-        c_l1 = np.array(data['C0'])
+        h_l1 = np.array(data['H_l1'])
+        c_l1 = np.array(data['C_l1'])
+        h_l2 = np.array(data['H_l2'])
+        c_l2 = np.array(data['C_l2'])
         global Wii1, Bii1, Whi1, Bhi1
         Wii1 = np.array(data['Wii1']).reshape([layer1Size, inputsize])
         Bii1 = np.array(data['Bii1'])
@@ -235,17 +237,16 @@ if __name__=="__main__":
     x1  = Dropout1.dot(h_l1) #predict x to feed the next layer
 
     #lstmlayer 2
-    i2 = Gate(x=x1, Wi=Wii2, Bi=Bii2, h=h1, Wh=Whi2, Bh=Bhi2, act_func='sigmoid')
-    f2 = Gate(x=x1, Wi=Wif2, Bi=Bif2, h=h1, Wh=Whf2, Bh=Bhf2, act_func='sigmoid')
-    g2 = Gate(x=x1, Wi=Wig2, Bi=Big2, h=h1, Wh=Whg2, Bh=Bhg2, act_func='tanh')
-    o2 = Gate(x=x1, Wi=Wio2, Bi=Bio2, h=h1, Wh=Who2, Bh=Bho2, act_func='sigmoid')
+    i2 = Gate(x=x1, Wi=Wii2, Bi=Bii2, h=h_l2, Wh=Whi2, Bh=Bhi2, act_func='sigmoid')
+    f2 = Gate(x=x1, Wi=Wif2, Bi=Bif2, h=h_l2, Wh=Whf2, Bh=Bhf2, act_func='sigmoid')
+    g2 = Gate(x=x1, Wi=Wig2, Bi=Big2, h=h_l2, Wh=Whg2, Bh=Bhg2, act_func='tanh')
+    o2 = Gate(x=x1, Wi=Wio2, Bi=Bio2, h=h_l2, Wh=Who2, Bh=Bho2, act_func='sigmoid')
     c_l2 = (f2*c_l2) + (i2*g2) #update the cell state for layer 2
     h_l2 = o1*(np.tanh(c_l2)) #update the hidden state for layer 2
     #fully connected layer using just the layer 2 hidden state for now
     WfcH = W_FC.dot(h_l2)
-    # print(WfcH)
     WfcH_b = WfcH + B_FC
-    print(B_FC)
+    
     fout = open("../outputs/lstm128_python_output.txt", "w")
     for i in range(outputsize):
         fout.write("{:.4f},\n".format(WfcH_b[i]))

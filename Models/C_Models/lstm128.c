@@ -76,9 +76,11 @@ void initialize_lstm128(void *param){
     }
     for(int i=0; i<H_size; i++){
         H_l1[i] = (double)rand()/(double)(RAND_MAX/highestFloat);
+        H_l2[i] = (double)rand()/(double)(RAND_MAX/highestFloat);
     }
     for(int i=0; i<C_size; i++){
         C_l1[i] = (double)rand()/(double)(RAND_MAX/highestFloat);
+        C_l2[i] = (double)rand()/(double)(RAND_MAX/highestFloat);
     }
     for(int i=0; i<W1_Rows; i++)
     {
@@ -254,8 +256,10 @@ void lstm128_to_json(char *filename){
     fprintf(outfile, "\"W2_Rows\": %d,\n", W2_Rows);
     fprintf(outfile, "\"Output_Size\": %d,\n", WFC_Rows);
     write_array_to_file(outfile, X, x_size, "Input", 0);
-    write_array_to_file(outfile, H_l1, H_size, "H0", 0);
-    write_array_to_file(outfile, C_l1, C_size, "C0", 0);
+    write_array_to_file(outfile, H_l1, H_size, "H_l1", 0);
+    write_array_to_file(outfile, C_l1, C_size, "C_l1", 0);
+    write_array_to_file(outfile, H_l2, H_size, "H_l2", 0);
+    write_array_to_file(outfile, C_l2, C_size, "C_l2", 0);
     //weights and biases
     write_array_to_file(outfile, Wii1, x_size*W1_Rows, "Wii1", 0);
     write_array_to_file(outfile, Bii1, W1_Rows, "Bii1", 0);
@@ -316,37 +320,37 @@ int run_inference_lstm128(){
 
     //i in register 7. 29, 30, and 31 are for temporary registers
     //void   (x,Wi,Bi, h,Wh,Bh, x_size, h_size, output_size, int act_func, reg temp1,reg temp2,reg temp3, reg des){
-    lstm_gate(1,4,5, 3,6,7, x_size, H_size, W1_Rows, 1, 29,30,31, 7); //i1 in 7
+    lstm_gate(1,4,5, 3,6,7, x_size, H_size, W1_Rows, 1, 29,30,31, 8); //i1 in 8
 
     //calculate f1
     load_m(4, Wif1, W1_Rows, x_size);
     load_v_t(5, Bif1, W1_Rows);
     load_m(6, Whf1, W1_Rows, H_size);
     load_v_t(7, Bhf1, W1_Rows);
-    lstm_gate(1,4,5, 3,6,7, x_size, H_size, W1_Rows, 1, 29,30,31, 8); //f1 in reg 8
+    lstm_gate(1,4,5, 3,6,7, x_size, H_size, W1_Rows, 1, 29,30,31, 9); //f1 in reg 9
 
     //calculate g
     load_m(4, Wig1, W1_Rows, x_size);
     load_v_t(5, Big1, W1_Rows);
     load_m(6, Whg1, W1_Rows, H_size);
     load_v_t(7, Bhg1, W1_Rows);                  // vvv for tanh
-    lstm_gate(1,4,5, 3,6,7, x_size, H_size, W1_Rows, 2, 29, 30, 31, 9); //g1 in reg 9
+    lstm_gate(1,4,5, 3,6,7, x_size, H_size, W1_Rows, 2, 29, 30, 31, 10); //g1 in reg 10
     //calculate o
     load_m(4, Wio1, W1_Rows, x_size);
     load_v_t(5, Bio1, W1_Rows);
     load_m(6, Who1, W1_Rows, H_size);
     load_v_t(7, Bho1, W1_Rows);
-    lstm_gate(1,4,5, 3,6,7, x_size, H_size, W1_Rows, 1, 29, 30, 31, 10); //o1 in reg 10
+    lstm_gate(1,4,5, 3,6,7, x_size, H_size, W1_Rows, 1, 29, 30, 31, 11); //o1 in reg 11
     //calculate C1
    
-    e_mul(8, 12, 13); //f1*c1 in reg 13
-    e_mul(7, 9, 14);//i1*g1 in reg 14 
-    add(13, 14, 2); //overwrite with C1 in 2
+    e_mul(9, 2, 13); //f1*c1 in reg 13
+    e_mul(8, 10, 14);//i1*g1 in reg 14 
+    add(13, 14, 2); //overwrite with new C1 in reg 2
 
     //calculate H1
     rotate_mov(2, 13); //setup C1 copy for activation
     activation(13, 14, 2); //apply tanh to c1
-    e_mul(10, 14, 3); //H1 = tanh(c1) * o1
+    e_mul(11, 14, 3); //H1 = o1 * tanh(c1)
 
     //predict x_layer2
     load_m(13, Bernoulli1, x_size, W1_Rows);
@@ -358,62 +362,61 @@ int run_inference_lstm128(){
     //x_layer2 in 16, c2 in 17, h2 in 18
     load_v(17, C_l2, C_size); //C2
     load_v(18, H_l2, H_size); //H2
-    load_m(8, Whi1, W1_Rows, H_size);
-    load_m(2, Wii2, W1_Rows, x_size);
-    load_v_t(3, Bii2, W1_Rows);
-    load_m(5, Whi2, W1_Rows, W1_Rows);
-    load_v_t(6, Bif2, W1_Rows);
+    load_m(4, Wii2, W1_Rows, x_size);
+    load_v_t(5, Bii2, W1_Rows);
+    load_m(6, Whi2, W1_Rows, W1_Rows);
+    load_v_t(7, Bif2, W1_Rows);
     //calculate i
-    lstm_gate(1,2,3,4,5,6, x_size, W1_Rows, W2_Rows, 1, 29, 30, 31, 7); //i2 in 7
+    //void   (x,Wi,Bi, h,Wh,Bh, x_size, h_size, output_size, int act_func, reg temp1,reg temp2,reg temp3, reg des)
+    lstm_gate(16,4,5, 18,6,7, x_size, W1_Rows, W2_Rows, 1, 29, 30, 31, 8); //i2 in 8
     // printreg_segment(7, 1, 128);
 
     //calculate f2
-    load_m(2, Wif2, W2_Rows, x_size);
-    load_v_t(3, Bif2, W2_Rows);
-    load_m(5, Whf2, W2_Rows, W1_Rows);
-    load_v_t(6, Bhf2, W2_Rows);
-    lstm_gate(1,2,3,4,5,6, x_size, W1_Rows, W2_Rows, 1, 29, 30, 31, 8); //f2 in reg 8
+    load_m(4, Wif2, W2_Rows, x_size);
+    load_v_t(5, Bif2, W2_Rows);
+    load_m(6, Whf2, W2_Rows, W1_Rows);
+    load_v_t(7, Bhf2, W2_Rows);
+    lstm_gate(16,4,5, 18,6,7, x_size, W1_Rows, W2_Rows, 1, 29, 30, 31, 9); //f2 in reg 9
     // printreg_segment(8, 1, 128);
     //calculate g2
-    load_m(2, Wig2, W2_Rows, x_size);
-    load_v_t(3, Big2, W2_Rows);
-    load_m(5, Whg2, W2_Rows, W1_Rows);
-    load_v_t(6, Bhg2, W2_Rows);                  // vvv for tanh
-    lstm_gate(1,2,3,4,5,6, x_size, W1_Rows, W2_Rows, 2, 29, 30, 31, 9); //g2 in reg 9
+    load_m(4, Wig2, W2_Rows, x_size);
+    load_v_t(5, Big2, W2_Rows);
+    load_m(6, Whg2, W2_Rows, W1_Rows);
+    load_v_t(7, Bhg2, W2_Rows);                  // vvv for tanh
+    lstm_gate(16,4,5, 18,6,7, x_size, W1_Rows, W2_Rows, 2, 29, 30, 31, 10); //g2 in reg 10
     // printreg_segment(9, 1, 128);
 
     //calculate o2
-    load_m(2, Wio2, W2_Rows, x_size);
-    load_v_t(3, Bio2, W2_Rows);
-    load_m(5, Who2, W2_Rows, W1_Rows);
-    load_v_t(6, Bho2, W2_Rows);
-    lstm_gate(1,2,3,4,5,6, x_size, W1_Rows, W2_Rows, 1, 29, 30, 31, 10); //o2 in reg 10
+    load_m(4, Wio2, W2_Rows, x_size);
+    load_v_t(5, Bio2, W2_Rows);
+    load_m(6, Who2, W2_Rows, W1_Rows);
+    load_v_t(7, Bho2, W2_Rows);
+    lstm_gate(16,4,5, 18,6,7, x_size, W1_Rows, W2_Rows, 1, 29, 30, 31, 11); //o2 in reg 11
     // printreg_segment(10, 1, 128);
 
     //calculate C2
-    e_mul(8, 12, 13); //f2*c1 in reg 13
-    e_mul(7, 9, 14);//i2*g2 in reg 14 
-    add(13, 14, 12); //overwrite with C2 in 12
+    e_mul(9, 17, 13); //f2*c1 in reg 13
+    e_mul(8, 10, 14);//i2*g2 in reg 14 
+    add(13, 14, 17); //overwrite old c2 with new C2 in 17
     // printreg_segment(12, 1, 128);
 
     //calculate H2
-    rotate_mov(12, 13); //setup C2 copy for activation
+    rotate_mov(17, 13); //setup C2 copy for activation
     activation(13, 14, 2); //apply tanh to c2
-    e_mul(10, 14, 16); //H2 = tanh(c2) * o2. Don't overwrite H1, might be needed for FC layer
-    // printreg_segment(16, 1, 128);
+    e_mul(11, 14, 18); //H2 = tanh(c2) * o2. reg 18
 
     //fully connected layer using just h2 for now
-    load_m(1, WFC, WFC_Rows, W2_Rows);
+    load_m(19, WFC, WFC_Rows, W2_Rows);
     // printreg_segment(1, 65, 128);
-    load_v_t(2, BFC, WFC_Rows); //todo: bias not matching json
-    e_mul_mv(1, 16, WFC_Rows, W2_Rows, 3);
-    acc_col(3, WFC_Rows, W2_Rows, 0, 4);
+    e_mul_mv(19, 18, WFC_Rows, W2_Rows, 20);
+    acc_col(20, WFC_Rows, W2_Rows, 0, 21);
     // printreg_segment(4, 1, 65);
+    load_v_t(22, BFC, WFC_Rows);
 
-    add(4, 2, 5);
-    rotate(5);
+    add(21, 22, 23);
+    rotate(23);
     // printreg_segment(5, 1, 65);
-    printreg_to_file(5, 1, 65, "../outputs/lstm128_c_output.txt");
+    printreg_to_file(23, 1, 65, "../outputs/lstm128_c_output.txt");
     return 0;
 }
 
