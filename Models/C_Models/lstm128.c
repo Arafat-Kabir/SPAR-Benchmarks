@@ -355,7 +355,7 @@ int run_inference_lstm128(){
     //predict x_layer2
     load_m(13, Bernoulli1, x_size, W1_Rows);
     e_mul_mv(13, 3, x_size, W1_Rows, 14); //h1*bernoulli
-    acc_col(4, x_size, W1_Rows, 0, 16); //overwrite x2 with pred-x2
+    acc_col(14, x_size, W1_Rows, 0, 16); //overwrite x2 with pred-x2
     rotate(16); //predicted x2 in 16
 
     //-----------Layer 2----------//
