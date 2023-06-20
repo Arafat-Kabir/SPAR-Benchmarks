@@ -3,7 +3,7 @@
 ## TODO
 
 - [ ] Notebook for PyTorch model design and training
-    - [ ] Train on whole dataset
+    - [x] Train on whole dataset
     - [ ] Export as PyTorch model
     - [ ] Export test dataset as dictionary with torch.save()
 - [ ] Notebook for Numpy model design and validation
