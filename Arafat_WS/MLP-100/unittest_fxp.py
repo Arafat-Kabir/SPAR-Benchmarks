@@ -80,3 +80,18 @@ print(after)
 print(status)
 assert status.overflow==True, "Problem with fxp_computeStatus()"
 assert status.overflow_count==5, "Problem with fxp_computeStatus()"
+
+
+
+print('\n\nfxp from matrix tests:')
+total_width = 10
+frac_width = 5
+mat_inp = [
+    [1, 2, 3, 4],
+    [2, 5, 7, 2],
+    [9, 3, 5, 0],
+]
+
+fxp_mat = fxp_ctor(total_width, frac_width, mat_inp)
+fxp_printValue(fxp_mat)
+

@@ -36,6 +36,17 @@ def fxp_copyStatus(dest, src):
     dest.max_valf = src.max_valf
     dest.min_valf = src.min_valf
 
+
+# This function can be used to accumulates errors from several consecutive operations
+# accumulates src onto des status object.
+def fxp_accumulateStatus(dest, src):
+    dest.overflow = (dest.overflow or src.overflow)    # any overflow means overall overflow
+    dest.overflow_count += src.overflow_count
+    dest.max_vali = max(src.max_vali, dest.max_vali)
+    dest.min_vali = min(src.min_vali, dest.min_vali)
+    dest.max_valf = max(src.max_valf, dest.max_valf)
+    dest.min_valf = min(src.min_valf, dest.min_valf)
+
         
 # fixed-point constructor: Returns a fixed-point object
 def fxp_ctor(total_width, frac_width, array, dtype=None):
@@ -129,6 +140,7 @@ def fxp_repr(fxp_num):
     mstr = ['fxp_FixedPoint:']
     mstr.append(f'  total_width: {fxp_num._total_width}')
     mstr.append(f'  frac_width: {fxp_num._frac_width}')
+    mstr.append(f'  scale_fact: {fxp_num._scale_fact}')
     mstr.append(f'  data: type{type(fxp_num._data)}  base-type: {fxp_num._data.dtype}  shape: {fxp_num._data.shape}')
     return '\n'.join(mstr)
 
@@ -140,6 +152,24 @@ def fxp_makeSame(template):
         template._total_width,
         template._frac_width,
         template._scale_fact,
+        None,
+        template._basetype, 
+    )
+    return retobj
+
+
+# Returns an instance of fxp_FixedPoint with wider parameters as template.
+# factor: is used to make the fxp fields wider
+# _data remains invalid.
+def fxp_makeWider(template, factor):
+    assert factor > 0, "factor needs to be > 0"
+    total_width = template._total_width * factor
+    frac_width = template._frac_width * factor
+    scale_fact = 2**frac_width    # scaling factor
+    retobj = fxp_FixedPoint(
+        total_width,
+        frac_width,
+        scale_fact,
         None,
         template._basetype, 
     )
