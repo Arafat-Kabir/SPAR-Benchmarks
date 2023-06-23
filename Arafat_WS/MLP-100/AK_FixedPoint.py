@@ -25,6 +25,8 @@ class fxp_Status:
     min_valf: float
 
 
+
+
 # This is needed because of Python's pass-by-ref mechanism. Should not be needed in C.
 def fxp_copyStatus(dest, src):
     dest.overflow = src.overflow
@@ -151,6 +153,10 @@ def fxp_copy(fxp_num):
     return retobj
     
 
+
+
+# ---- Printing utilities ----
+
 # Prints a representation
 def fxp_printInfo(fxp_num):
     print(fxp_repr(fxp_num))
@@ -171,5 +177,47 @@ def fxp_printValue(fxp_num):
 def fxp_printBinstr(fxp_num):
     bin_str = fxp_getAsBin(fxp_num)
     print(bin_str)
+
+
+
+
+# ---- Math Operations ----
+
+# Adds two Fixed point numbers
+# status_obj: instance of fxp_Status to get status back
+def fxp_add(a, b, status_obj=None):
+    fxp_isCompatible(a, b)
+    sum_data = a._data + b._data
+    retobj = fxp_makeSame(a)
+    retobj._data = sum_data
+    fit_stat = fxp_fitData(retobj, True)
+    if status_obj: fxp_copyStatus(status_obj, fit_stat)
+    return retobj
+
+
+# Subtracts two Fixed point numbers
+# status_obj: instance of fxp_Status to get status back
+def fxp_sub(a, b, status_obj=None):
+    fxp_isCompatible(a, b)
+    sub_data = a._data - b._data
+    retobj = fxp_makeSame(a)
+    retobj._data = sub_data
+    fit_stat = fxp_fitData(retobj, True)
+    if status_obj: fxp_copyStatus(status_obj, fit_stat)
+    return retobj
+    
+
+# Multiplier two Fixed point numbers
+# status_obj: instance of fxp_Status to get status back
+def fxp_mult(a, b, status_obj=None):
+    fxp_isCompatible(a, b)
+    frac_width = a._frac_width
+    mult_data = (a._data * b._data) >> frac_width   # multiply scale-down
+    retobj = fxp_makeSame(a)
+    retobj._data = mult_data
+    fit_stat = fxp_fitData(retobj, True)
+    if status_obj: fxp_copyStatus(status_obj, fit_stat)
+    return retobj
+
 
 
