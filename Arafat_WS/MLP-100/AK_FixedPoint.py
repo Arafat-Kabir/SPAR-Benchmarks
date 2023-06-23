@@ -61,8 +61,8 @@ def fxp_ctor(total_width, frac_width, array, dtype=None):
     nparray = np.array(array) * scale   # scale the input numbers
     nparray = nparray.astype(dtype)     # convert to integer type
     fpitem = fxp_FixedPoint(total_width, frac_width, scale, nparray, dtype)
-    fxp_fitData(fpitem, False)                 # fit within the specified width
-    return fpitem
+    stat = fxp_fitData(fpitem, False)                 # fit within the specified width
+    return fpitem, stat
 
 
 # checks if given fixed-point numbers are compatible

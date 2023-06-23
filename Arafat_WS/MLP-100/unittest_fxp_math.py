@@ -7,8 +7,8 @@ def test_add():
     total_width = 10
     frac_width = 5
     stat = fxp_Status(0,0,0,0,0,0)
-    num1 = fxp_ctor(total_width, frac_width,  [10, 12, -3, 12, -10, 10])
-    num2 = fxp_ctor(total_width, frac_width, [1, 2,  3, -6, -10, 10])
+    num1, _ = fxp_ctor(total_width, frac_width,  [10, 12, -3, 12, -10, 10])
+    num2, _ = fxp_ctor(total_width, frac_width, [1, 2,  3, -6, -10, 10])
     tnum = np.array([2., 4., 0., 6., 12., -12.])
     num3 = fxp_add(num1, num2, stat)
     fxp_printInfo(num3)
@@ -30,8 +30,8 @@ def test_sub():
     total_width = 10
     frac_width = 5
     stat = fxp_Status(0,0,0,0,0,0)
-    num1 = fxp_ctor(total_width, frac_width, [10, 12, -3, 12, -10,  10, -8, -8])
-    num2 = fxp_ctor(total_width, frac_width, [ 1,  2,  3, -6, -10, -10,  8,  9])
+    num1, _ = fxp_ctor(total_width, frac_width, [10, 12, -3, 12, -10,  10, -8, -8])
+    num2, _ = fxp_ctor(total_width, frac_width, [ 1,  2,  3, -6, -10, -10,  8,  9])
     tnum = np.array([9., 10., -6., -14., 0., -12., -16., 15.])
     num3 = fxp_sub(num1, num2, stat)
     fxp_printInfo(num3)
@@ -53,8 +53,8 @@ def test_mult():
     total_width = 10
     frac_width = 5
     stat = fxp_Status(0,0,0,0,0,0)
-    num1 = fxp_ctor(total_width, frac_width, [2.4, 3.5, -3.1, 12, -16, -16])    # -16 x -1 overflows
-    num2 = fxp_ctor(total_width, frac_width, [  1,   2,    3, -1,  -1,   1])    # -16 x 1 does not overflow
+    num1, _ = fxp_ctor(total_width, frac_width, [2.4, 3.5, -3.1, 12, -16, -16])    # -16 x -1 overflows
+    num2, _ = fxp_ctor(total_width, frac_width, [  1,   2,    3, -1,  -1,   1])    # -16 x 1 does not overflow
     tnum = np.array([  2.375, 7., -9.28125, -12., -16, -16])
     num3 = fxp_mult(num1, num2, stat)
     fxp_printInfo(num3)
@@ -75,8 +75,8 @@ def test_wrap():
     print('Testing wrapping behavior:')
     total_width = 8
     frac_width = 4
-    num_count = fxp_ctor(total_width, frac_width, 0)
-    num_one = fxp_ctor(total_width, frac_width, 1)
+    num_count, _ = fxp_ctor(total_width, frac_width, 0)
+    num_one, _ = fxp_ctor(total_width, frac_width, 1)
     check_vals = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, -8.0, -7.0, -6.0, -5.0, -4.0, -3.0, -2.0, -1.0, 0.0]
 
     whole_width = total_width - frac_width
@@ -94,8 +94,8 @@ def test_frac_precision():
     total_width = 6
     frac_width = 3
     scale = 2**frac_width
-    num_count = fxp_ctor(total_width, frac_width, [1])
-    num_frac = fxp_ctor(total_width, frac_width, [1/scale])
+    num_count, _ = fxp_ctor(total_width, frac_width, [1])
+    num_frac, _ = fxp_ctor(total_width, frac_width, [1/scale])
     check_vals = [9, 10, 11, 12, 13, 14, 15, 16]
 
     for i in range(2**frac_width):
