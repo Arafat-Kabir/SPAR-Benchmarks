@@ -1,4 +1,5 @@
 dataset/
 saved/
 session/
+__pycache__/
 quick-tests.ipynb
