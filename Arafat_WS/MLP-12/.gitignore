@@ -1,3 +1,7 @@
 dataset/
 saved/
 __pycache__/
+
+*.swp
+*.o
+*.out
